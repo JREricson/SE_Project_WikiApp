@@ -32,15 +32,15 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/about", (req, res) => {
-  res.send("test");
+  res.render("pages/about");
 });
 
 //api
 app.use("/api", require("./routes/api"));
 
 app.use((req, res, next) => {
-  res.send("404");
-  // res.status(404).render("404");
+  // res.send("404");
+  res.status(404).render("pages/404");
 });
 
 const PORT = process.env.PORT || 3007;
