@@ -1,0 +1,32 @@
+.list-group {
+}
+
+.viewInfoBtn {
+  float: right;
+  /* margin-left: 80%; */
+}
+
+.listPageContent {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.locationMap {
+  /* padding: 4%; */
+  width: 100%;
+  /* set height to 70 of screen size */
+}
+
+ItemList {
+  /* max-height: 70px;
+  margin-bottom: 10px; */
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+  width: auto;
+
+  /* set to 70% os screen size */
+}
+
+.listTitle {
+  text-align: center;
+}

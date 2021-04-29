@@ -1,0 +1,42 @@
+
+<%- include("../components/header") %>
+<%- include("../components/navbar") %>
+
+<% let listName = "test List" %>
+<% let listItems = [{"name": "item1", "desc": "testy test"},{"name":  "name2", "desc": "another testy test"}] %>
+
+<h1 class="listTitle"><%= listName%></h1>
+
+
+<div class="row">
+    <div class="col-12 col-md-8">
+
+
+        <%- include("../components/map") %>
+    </div>
+    <div class="col-6 col-md-4">
+       
+<% if (listItems) {%>
+    <ul class="list-group ItemL">
+    <% listItems.forEach((item)=>{ %>
+        <li class="list-group-item"><%= item.name%><button class="btn btn-primary btn-sm viewInfoBtn">view</button></li>
+   <%  }) %>
+
+    </ul>
+
+    <% }%>
+
+
+    </div>
+  </div>
+
+  
+</div>
+
+
+
+
+
+
+
+ <%- include("../components/footer") %>

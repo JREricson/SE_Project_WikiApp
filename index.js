@@ -19,6 +19,10 @@ app.use(expressSanitizer());
 //app.use(expressLayouts);
 app.set("view engine", "ejs");
 
+app.get("/lists/:userID/:ListId", (req, res) => {
+  res.render("pages/viewMap");
+});
+
 app.get("/", (req, res) => {
   res.send("test");
 });

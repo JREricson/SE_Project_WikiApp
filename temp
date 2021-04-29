@@ -1,0 +1,33 @@
+
+<div class ="listPageContent">
+<% listItems[0].forEach((item) =>{%>
+    <p> <%= item.listName %> </p>
+  <p> <%= item %> </p>
+    <% }) %>
+
+
+<div class="row">
+    <div class="col-12 col-md-8">
+
+
+        <%- include("../components/map") %>
+    </div>
+    <div class="col-6 col-md-4">
+       
+<% if (listItems) {%>
+    <ul class="list-group ItemList">
+    <% listItems.forEach((item)=>{ %>
+        <li class="list-group-item"><%= item.listName%><button class="btn btn-primary btn-sm viewInfoBtn">view</button></li>
+   <%  }) %>
+
+    </ul>
+
+    <% }%>
+
+
+    </div>
+  </div>
+
+  
+</div>
+
