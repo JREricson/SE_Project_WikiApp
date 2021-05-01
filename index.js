@@ -5,6 +5,22 @@ const expressSanitizer = require("express-sanitizer");
 const methodOverride = require("method-override");
 const path = require("path");
 
+//Setting up database -- using MongoAtlas
+//url for database
+const mongoUrl = process.env.MONGO_URL;
+
+//connecting to mongo
+mongoose
+  .connect(mongoUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log(err));
+//mongoose.set('useCreateIndex', true);
+//handle a depreciation warning on useFindAndModify
+mongoose.set("useFindAndModify", false);
+
 //setting up app
 ///////////////////
 const app = express();
