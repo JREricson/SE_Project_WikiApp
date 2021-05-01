@@ -1,3 +1,5 @@
+#source -- git ignore came from here: https://github.com/github/gitignore/blob/master/Node.gitignore
+
 # Logs
 logs
 *.log
