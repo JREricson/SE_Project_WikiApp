@@ -1,10 +1,20 @@
 const mongoose = require("mongoose"),
   Schema = mongoose.Schema,
-  ObjectId = Schema.ObjectId,
-  textSearch = require("mongoose-text-search");
+  ObjectId = Schema.ObjectId;
 
 const UserSchema = new Schema({
-  name: {
+  usr_name: {
+    type: String,
+    required: true,
+  },
+  usr_listIds: {
+    //stores Lists objects
+    type: [ObjectId],
+    index: true,
+    default: [],
+    required: true,
+  },
+  usr_password: {
     type: String,
     required: true,
   },

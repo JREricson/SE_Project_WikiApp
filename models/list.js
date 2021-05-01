@@ -1,16 +1,15 @@
 const mongoose = require("mongoose"),
   Schema = mongoose.Schema,
-  ObjectId = Schema.ObjectId,
-  textSearch = require("mongoose-text-search");
+  ObjectId = Schema.ObjectId;
 
 const ListSchema = new Schema({
-  li_name: {
+  lst_name: {
     type: String,
     required: true,
   },
-  li_items: [
+  lst_items: [
     {
-      it_Name: {
+      itm_Name: {
         type: String,
         default: "",
       },
@@ -21,7 +20,7 @@ const ListSchema = new Schema({
       // latitude: {
       //   type: String,
       //   default: "",
-      it_Desc: {
+      itm_url: {
         type: String,
         default: "",
       },
@@ -29,9 +28,5 @@ const ListSchema = new Schema({
   ],
 });
 
-//adding index for searching names
-UserSchema.plugin(textSearch);
-UserSchema.index({ name: "text" });
-
-const User = mongoose.model("User", UserSchema);
-module.exports = User;
+const List = mongoose.model("List", ListSchema);
+module.exports = List;

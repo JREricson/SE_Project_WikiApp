@@ -4,6 +4,9 @@ const env = require("dotenv").config();
 const expressSanitizer = require("express-sanitizer");
 const methodOverride = require("method-override");
 const path = require("path");
+const mongoose = require("mongoose");
+const session = require("express-session");
+//const MongoDBStore = require("connect-mongo")(session);
 
 //Setting up database -- using MongoAtlas
 //url for database
