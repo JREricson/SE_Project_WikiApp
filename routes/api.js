@@ -1,6 +1,7 @@
 const express = require("express"),
   fetch = require("node-fetch"),
-  fileType = require("file-type");
+  fileType = require("file-type"),
+  sharp = require("sharp");
 
 const router = express.Router();
 
@@ -10,7 +11,15 @@ router.get("/", (req, res) => {
 
 router.get("/picture", async (req, res) => {
   //TODO make all queries lowecase
-  let acceptedQueries = { percent: 1, url: 1, centeredSquare: 1 };
+
+  let acceptedQueries = {
+    percent: 1,
+    url: 1,
+    centeredSquare: 1,
+    ht: 1,
+    wid: 1,
+    fit: 1,
+  };
   let rejectedqueries = [];
   //errors=[]
 
@@ -41,9 +50,34 @@ router.get("/picture", async (req, res) => {
   } else {
     //TODO add catch if not url
     console.log(query.url);
-    imageBuffer = await getImageFomUrl(query.url);
+    let { imageBuffer, getImageErrors } = await getImageBufferFomUrl(query.url);
 
-    res.end(imageBuffer, "binary");
+    if (getImageErrors.length > 0) {
+      //|| imageBuffer == null
+
+      console.log("prob with image buff");
+      res.send(getImageErrors);
+    } else {
+      console.log(typeof imageBuffer);
+      let {
+        transformedImage,
+        processedImageErrors,
+      } = await makeTransformedImage(query, res, imageBuffer);
+
+      if (processedImageErrors.length > 0) {
+        res.send(processedImageErrors);
+      } else {
+        console.log("made it!");
+        console.log(typeof transformedImage);
+        res.end(transformedImage, "binary");
+      }
+
+      //  res.end(imageBuffer);
+    }
+
+    //let transformedImage = await sendProcessedImage(query, res, imageBuffer);
+
+    //res.end(transformedImage, "binary");
 
     // console.log(importScripts);
     // res.end(imageBuffer, "binary");
@@ -54,32 +88,71 @@ router.get("/picture", async (req, res) => {
     //else
     // sendProcessedImage(query.url, res);
 
-    // res.send(`your query was:  ${JSON.stringify(req.query)}  `);
+    //  res.send(`your query was:  ${JSON.stringify(req.query)}  `);
   }
 });
 
-const getImageFomUrl = async (url) => {
-  urlRes = await fetch(url);
-  //console.log(img);
+const getImageBufferFomUrl = async (url) => {
+  let getImageErrors = [];
+  let urlRes;
+  let imageBuffer;
+  try {
+    urlRes = await fetch(url);
 
-  if (urlRes && urlRes.buffer) {
-    return urlRes.buffer();
-  } else {
-    return "no img buffer";
+    if (urlRes && urlRes.buffer) {
+      imageBuffer = await urlRes.buffer();
+      // console.log(`file type is
+      // ${fileType(urlRes.buffer)}`);
+    } else {
+      getImageErrors.push("no img buffer");
+    }
+  } catch {
+    getImageErrors.push("cannot process url");
   }
-
-  //fetch data
-  //save as binary
+  return { imageBuffer, getImageErrors };
 };
 
-const sendProcessedImage = (query, res) => {};
+const makeTransformedImage = async (query, res, imageBuffer) => {
+  let transformedImage;
+  let processedImageErrors = [];
+  let resizeObj = {};
+  let acceptedFitKeys = { stretch: 1, crop: 1 };
+  let translateKeys = { crop: "cover", stretch: "fill" };
 
-// let resizedPhoto
-// await sharp(photoBuffer)
-//   .resize({ width: 1200, height: 900, fit: 'fill' })
-//   .toBuffer()
-//   .then((data) => {
-//     resizedPhoto = data
-//   })
-//   .catch((err) => {})
+  if (query.fit) {
+    acceptedFitKeys[query.fit] &&
+      (resizeObj = { ...resizeObj, ...{ fit: translateKeys[query.fit] } });
+    !acceptedFitKeys[query.fit] &&
+      processedImageErrors.push(`fit cannnot have value of : ${query.fit}`);
+  }
+
+  if (query.wid) {
+    resizeObj = { ...resizeObj, ...{ width: parseInt(query.wid) } };
+  }
+
+  if (query.ht) {
+    resizeObj = { ...resizeObj, ...{ height: parseInt(query.ht) } };
+  }
+
+  if (processedImageErrors.length === 0) {
+    try {
+      await sharp(imageBuffer)
+        .resize(resizeObj)
+
+        .toBuffer()
+        .then((data) => {
+          transformedImage = data;
+        })
+        .catch((err) => {
+          console.log("==================================================");
+          console.log(err);
+        });
+      console.log("made it here");
+    } catch {
+      processedImageErrors.push("unknown error during image transformation");
+    }
+  }
+  return { transformedImage, processedImageErrors };
+};
+
 module.exports = router;
