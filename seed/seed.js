@@ -4,6 +4,7 @@ const User = require("../models/user"),
 const env = require("dotenv").config();
 const mongoUrl = process.env.MONGO_URL;
 
+//connecting to mongo
 mongoose
   .connect(mongoUrl, {
     useNewUrlParser: true,
