@@ -47,11 +47,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.send("test");
+  res.render("pages/login");
 });
 
 app.get("/register", (req, res) => {
-  res.send("test");
+  res.render("pages/register");
 });
 
 app.get("/about", (req, res) => {
