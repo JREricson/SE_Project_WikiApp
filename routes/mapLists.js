@@ -16,11 +16,16 @@ router.get("/:userId/:listId", async (req, res) => {
   if (contentOwner) {
     listObj = await dbMethods.findListbyId(req.params.listId);
   }
+  if (contentOwner) {
+    userLists = await dbMethods.findNamesOfUerLists(req.params.listId);
+  }
 
-  if (contentOwner && listObj) {
-    res.render("pages/viewMap");
+  //TODO -- fix this ugly line
+  if (typeof contentOwner != "object" || typeof listObj != "object") {
+    res.status(404).render("pages/404");
   } else {
-    res.status(404).render("pages/404", { contentOwner, listObj });
+    console.log("--liat -- \n" + listObj, contentOwner);
+    res.render("pages/viewMap", { contentOwner, listObj });
   }
 
   console.log("content owner -->" + contentOwner);

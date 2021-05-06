@@ -71,24 +71,7 @@ router.get("/picture", async (req, res) => {
         console.log(typeof transformedImage);
         res.end(transformedImage, "binary");
       }
-
-      //  res.end(imageBuffer);
     }
-
-    //let transformedImage = await sendProcessedImage(query, res, imageBuffer);
-
-    //res.end(transformedImage, "binary");
-
-    // console.log(importScripts);
-    // res.end(imageBuffer, "binary");
-    //process image()
-
-    //if errors
-    //send erros back
-    //else
-    // sendProcessedImage(query.url, res);
-
-    //  res.send(`your query was:  ${JSON.stringify(req.query)}  `);
   }
 });
 

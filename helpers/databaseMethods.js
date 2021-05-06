@@ -5,27 +5,33 @@ moduleObj = {};
 
 /**
  * tries to find a user in the database, ruturns null if none found
- * @param {*} userID
+ * @param {*} userId
  */
-moduleObj.findUserbyId = async (userID) => {
+moduleObj.findUserbyId = async (userId) => {
   let contentOwner;
   try {
-    contentOwner = await User.findById(req.params.userId);
+    contentOwner = await User.findById(userId);
+    console.log("found?: " + contentOwner);
   } catch {
     contentOwner = "undefined";
+    console.log("did not find");
   }
 
   return contentOwner;
 };
 
-moduleObj.findListbyId = async (userID) => {
+moduleObj.findListbyId = async (listId) => {
   let contentOwner;
   try {
-    theList = await List.findById(req.params.userId);
+    theList = await List.findById(listId);
   } catch {
     theList = "undefined";
   }
   return theList;
+};
+
+moduleObj.findNamesOfUerLists = (userId) => {
+  let listOfNameObjs; // name: Id pair objs
 };
 
 module.exports = moduleObj;

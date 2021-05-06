@@ -1,11 +1,21 @@
 
 <%- include("../components/header") %>
+<style src="../../styles/modal.css"></style>
 <%- include("../components/navbar") %>
+
+
 
 <% let listName = "test List" %>
 <% let listItems = [{"name": "item1", "desc": "testy test"},{"name":  "name2", "desc": "another testy test"}] %>
+<div id="list-data" data-list= "<%=JSON.stringify(listObj) %>">
+<p><%=JSON.stringify(contentOwner) %></p>
 
-<h1 class="listTitle"><%= listName%></h1>
+<h1 class="listTitle"><%=listObj.lst_name %></h1>
+
+
+
+
+
 
 
 <div class="row">
@@ -16,11 +26,13 @@
     </div>
     <div class="col-6 col-md-4">
        
-<% if (listItems) {%>
+<% if (listObj.lst_items) {%>
     <ul class="list-group ItemL">
-    <% listItems.forEach((item)=>{ %>
-        <li class="list-group-item"><%= item.name%><button class="btn btn-primary btn-sm viewInfoBtn">view</button></li>
-   <%  }) %>
+    <% listObj.lst_items.forEach((item, ndx)=>{ %>
+        <li class="list-group-item"><%= item.itm_Name%><a href="#item-info-modal" data-toggle="modal"><button  data-index=<%=ndx%> type="button" class="btn btn-primary btn-sm viewInfoBtn " data-toggle="modal" data-target="#myModal"   onClick="open_modal(<%= ndx %>)" >view</button></a></li>
+   
+
+        <%  }) %>
 
     </ul>
 
@@ -30,13 +42,50 @@
     </div>
   </div>
 
+
+  <div id=test-div></div>
+
+    <!-- Launch Modal -->
+    <a href="#item-info-modal" class="btn btn-lg btn-primary" 
+    data-toggle="modal">Click to Launch Modal(Large)</a>
+      
+      <!-- Modal Contents -->
+      <div id="item-info-modal" class="modal fade "> <!-- class modal and fade -->
+        
+      <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+             <div class="modal-header"> <!-- modal header -->
+                   <h4 id="modal-list-name" class="modal-title"></h4>
+             </div>
+           
+       <div class="modal-body"> 
+           <img id="modal-image" src="" alt="">
+           <p id="modal-list-description"></p>
+  
+       </div>
+       
+       <div class="modal-footer"> <!-- modal footer -->
+         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+
+        </div>      
+        </div> <!-- / .modal-content -->
+      </div> <!-- / .modal-dialog -->
+        
+   </div><!-- / .modal -->
+
+
+
+
+
+
+
+
   
 </div>
 
 
-
-
-
-
+<script src="../../scripts/fakeImageService.js"></script>
+<script src="../../scripts/fakeMapService.js"></script>
+<script src="../../scripts/resetModalData.js"></script>
 
  <%- include("../components/footer") %>
