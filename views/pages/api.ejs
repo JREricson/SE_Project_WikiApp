@@ -1,0 +1,74 @@
+<%- include("../components/header") %>
+
+<div class="api-info">
+<h1>API information</h1>
+
+<br>
+
+<h2><strong>pictures endpoint</strong> </h2>
+<h3><strong>Location</strong></h3>
+<p>/api/picture</p>
+<h3><strong>Description</strong></h3>
+<p>The pictures endpoint takes a in a url of an image in tiff, jpeg, gif, and png formats, then transforms the images based on the values provided in ht, wid, and fit keys. If the request cannot be processed, the site will attempt an appropriate error message.</p>
+
+
+
+
+
+<h3><strong>Accepted queries keys:</strong> </h3>
+
+
+    <ul>
+        <li>url
+            <ul>
+                <li><strong>Description:</strong> a url in with standard query encoding </li>
+                <li><strong>Example query:</strong> picture?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2F6%2F6e%2FGolde33443.jpg</li>
+                <li><strong>Comments:</strong> Here is an example of encoding a string in python. Other languages will have similar options.  https://stackoverflow.com/questions/5607551/how-to-urlencode-a-querystring-in-python</li>
+  
+            </ul>
+        </li>
+        <li>ht
+            <ul>
+                <li><strong>Description:</strong> The number of pixels desired for the height. If no width is provided, the returned image will be of the same aspect ratio.</li>  
+                <li><strong>Example query:</strong> picture?ht=400&url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2F6%2F6e%2FGolde33443.jpg</li>
+            </ul>
+        </li>
+        <li>wid
+            <ul>
+                <li><strong>Description:</strong> The number of pixels desired for the Width. If no height is provided, the returned image will be of the same aspect ratio.</li>  
+                <li><strong>Example query:</strong> picture?wid=400&url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2F6%2F6e%2FGolde33443.jpg</li>
+            </ul>
+        </li>
+        <li>fit
+            <ul>
+                <li><strong>Description:</strong>The method used to fill the image dimensions. Can be set to either “crop” or “stretch”. Images will be centered by default.</li>
+                <li><strong>Example query:</strong>picture?ht=400&wid=400&fit=crop&url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2F6%2F6e%2FGolde33443.jpg</li>
+
+            </ul>
+        </li>
+    </ul>
+        <br>
+
+<h3><strong>Supported file types</strong></h3>
+<ul>
+    <li>gif: may not animate</li>
+    <li>tiff</li>
+    <li>jpeg</li>
+    <li>png</li>
+
+</ul>
+    
+    <h3><strong>Error messages</strong></h3>
+    <p>When a request cannot be processed the system will try to generate an appropriate error. Examples are shown below.</p>
+
+    <ul>
+        <li>{"urlError":"cannot process url"}</li>
+        <li>{"mimeTypeError":"audio/mpeg is not a valid mimetype"}</li>
+        <li>{"RejectedQueryError":{"rejected":["wif","stretch"]}}</li>
+        <li>{"keyError":"wid cannot have value of 'all'"}</li>
+        <li>{"noUrlError":"no url provided"}</li>
+    </ul>
+</div>
+
+
+    <%- include("../components/footer") %>

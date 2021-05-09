@@ -33,6 +33,15 @@ const getImageFakeService = (url, item) => {
       itemLink =
         "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Lake-Superior.svg/1024px-Lake-Superior.svg.png";
       break;
+    ////
+    case "Sahara":
+      itemLink =
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Sahara_satellite_hires.jpg/1024px-Sahara_satellite_hires.jpg";
+      break;
+    case "Gobi_Desert":
+      itemLink =
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Gobi_Desert_dunes.jpg/800px-Gobi_Desert_dunes.jpg";
+      break;
     default:
   }
 

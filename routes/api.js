@@ -6,7 +6,7 @@ const express = require("express"),
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.send("instructions will be here");
+  res.render("../views/pages/api");
 });
 
 router.get("/picture", async (req, res) => {
@@ -52,7 +52,7 @@ router.get("/picture", async (req, res) => {
     console.log(query.url);
     let { imageBuffer, getImageErrors } = await getImageBufferFomUrl(query.url);
 
-    if (getImageErrors.length > 0) {
+    if (Object.keys(getImageErrors).length > 0) {
       //|| imageBuffer == null
 
       console.log("prob with image buff");
@@ -64,10 +64,9 @@ router.get("/picture", async (req, res) => {
         processedImageErrors,
       } = await makeTransformedImage(query, res, imageBuffer);
 
-      if (processedImageErrors.length > 0) {
+      if (Object.keys(processedImageErrors).length > 0) {
         res.send(processedImageErrors);
       } else {
-        console.log("made it!");
         console.log(typeof transformedImage);
         res.end(transformedImage, "binary");
       }
@@ -76,28 +75,41 @@ router.get("/picture", async (req, res) => {
 });
 
 const getImageBufferFomUrl = async (url) => {
-  let getImageErrors = [];
+  let getImageErrors = {};
   let urlRes;
   let imageBuffer;
+  let acceptedMimeTypes = {
+    "image/jpeg": 1,
+    "image/png": 1,
+    "image/tiff": 1,
+    "image/gif": 1,
+  };
   try {
     urlRes = await fetch(url);
 
+    //TODO need to check file type --  needs to be JPEG, PNG, WebP, TIFF, GIF,
+
     if (urlRes && urlRes.buffer) {
       imageBuffer = await urlRes.buffer();
-      // console.log(`file type is
-      // ${fileType(urlRes.buffer)}`);
+      let fileTypeobj = await fileType.fromBuffer(imageBuffer);
+
+      let mimeType = fileTypeobj.mime.toLocaleLowerCase();
+      console.log("mimetype is ", mimeType);
+      if (!acceptedMimeTypes[mimeType]) {
+        getImageErrors["mimeTypeError"] = `${mimeType} is not a valid mimetype`;
+      }
     } else {
-      getImageErrors.push("no img buffer");
+      getImageErrors["imgBufferError"] = `no img buffer`;
     }
   } catch {
-    getImageErrors.push("cannot process url");
+    getImageErrors["urlError"] = `cannot process url`;
   }
   return { imageBuffer, getImageErrors };
 };
 
 const makeTransformedImage = async (query, res, imageBuffer) => {
   let transformedImage;
-  let processedImageErrors = [];
+  let processedImageErrors = {};
   let resizeObj = {};
   let acceptedFitKeys = { stretch: 1, crop: 1 };
   let translateKeys = { crop: "cover", stretch: "fill" };
@@ -105,19 +117,38 @@ const makeTransformedImage = async (query, res, imageBuffer) => {
   if (query.fit) {
     acceptedFitKeys[query.fit] &&
       (resizeObj = { ...resizeObj, ...{ fit: translateKeys[query.fit] } });
-    !acceptedFitKeys[query.fit] &&
-      processedImageErrors.push(`fit cannnot have value of : ${query.fit}`);
+    if (!acceptedFitKeys[query.fit]) {
+      processedImageErrors[
+        "keyError"
+      ] = `keyError: fit cannnot have value of  \'${query.fit}\'`;
+    }
   }
 
   if (query.wid) {
-    resizeObj = { ...resizeObj, ...{ width: parseInt(query.wid) } };
+    let wid = parseInt(query.wid);
+    if (!wid) {
+      processedImageErrors[
+        "keyError"
+      ] = `wid cannot have value of \'${query.wid}\'`;
+    } else {
+      resizeObj = { ...resizeObj, ...{ width: parseInt(query.wid) } };
+    }
   }
 
   if (query.ht) {
-    resizeObj = { ...resizeObj, ...{ height: parseInt(query.ht) } };
+    let ht = parseInt(query.ht);
+    //would wan to fir to regex to check ranges, but implemented now as is beyond school project needs
+
+    if (!ht) {
+      processedImageErrors[
+        "keyError"
+      ] = `ht cannot have value of \'${query.ht}\'`;
+    } else {
+      resizeObj = { ...resizeObj, ...{ height: parseInt(query.ht) } };
+    }
   }
 
-  if (processedImageErrors.length === 0) {
+  if (Object.keys(processedImageErrors).length === 0) {
     try {
       await sharp(imageBuffer)
         .resize(resizeObj)
@@ -127,12 +158,11 @@ const makeTransformedImage = async (query, res, imageBuffer) => {
           transformedImage = data;
         })
         .catch((err) => {
-          console.log("==================================================");
           console.log(err);
         });
-      console.log("made it here");
     } catch {
-      processedImageErrors.push("unknown error during image transformation");
+      processedImageErrors["unknownError"] =
+        " unknown error during image transformation";
     }
   }
   return { transformedImage, processedImageErrors };

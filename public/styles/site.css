@@ -77,3 +77,10 @@ ItemList {
 } */
 
 /* Modal */
+
+/* API Page */
+.api-info {
+  padding: 5em;
+  background-color: rgb(36, 35, 35);
+  color: rgb(209, 209, 209);
+}

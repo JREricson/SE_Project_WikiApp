@@ -1,7 +1,9 @@
 //for btn in list -- add click listener
 
 const modalBtns = document.querySelectorAll(".viewInfoBtn"),
-  modalImg = document.getElementById("modal-image");
+  modalImg = document.getElementById("modal-image"),
+  modalName = document.getElementById("modal-list-name"),
+  modalDescription = document.getElementById("modal-list-description");
 
 // for (const btn of modalBtns) {
 //   btn.addEventListener("click", function (event) {
@@ -16,8 +18,10 @@ const modalBtns = document.querySelectorAll(".viewInfoBtn"),
 //   });
 // }
 const open_modal = (index) => {
-  console.log(ListDataObj.lst_items[index]);
+  //console.log(ListDataObj.lst_items[index]);
   modalImg.src = ListDataObj.lst_items[index].imgUrl;
-
-  console.log(index);
+  modalName.innerHTML = ListDataObj.lst_items[index].itm_Name;
+  ListDataObj.lst_items[index];
+  modalDescription.innerHTML = ListDataObj.lst_items[index].desc;
+  console.log(ListDataObj.lst_items[index]);
 };
