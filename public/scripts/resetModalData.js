@@ -19,7 +19,12 @@ const modalBtns = document.querySelectorAll(".viewInfoBtn"),
 // }
 const open_modal = (index) => {
   //console.log(ListDataObj.lst_items[index]);
-  modalImg.src = ListDataObj.lst_items[index].imgUrl;
+  let imgUrl = ListDataObj.lst_items[index].imgUrl;
+  console.log(imgUrl);
+
+  let encodedUrl = encodeURIComponent(imgUrl);
+  console.log(encodedUrl);
+  modalImg.src = `../../api/picture?wid=${vw / 3}&fit=crop&url=${encodedUrl}`;
   modalName.innerHTML = ListDataObj.lst_items[index].itm_Name;
   ListDataObj.lst_items[index];
   modalDescription.innerHTML = ListDataObj.lst_items[index].desc;

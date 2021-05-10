@@ -28,7 +28,6 @@ moduleObj.findListbyId = async (listId) => {
 };
 
 moduleObj.findListbyId = async (listId) => {
-  let contentOwner;
   try {
     theList = await List.findById(listId);
   } catch {
