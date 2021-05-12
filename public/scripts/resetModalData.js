@@ -5,6 +5,10 @@ const modalBtns = document.querySelectorAll(".viewInfoBtn"),
   modalName = document.getElementById("modal-list-name"),
   modalDescription = document.getElementById("modal-list-description");
 
+//getting images from data in html
+let imgUrlsElement = document.getElementById("list-data");
+let allImgUrls = JSON.parse(imgUrlsElement.dataset.imgurls);
+
 // for (const btn of modalBtns) {
 //   btn.addEventListener("click", function (event) {
 //     // modalImg.src = encodeURIComponent(
@@ -19,14 +23,14 @@ const modalBtns = document.querySelectorAll(".viewInfoBtn"),
 // }
 const open_modal = (index) => {
   //console.log(ListDataObj.lst_items[index]);
-  let imgUrl = ListDataObj.lst_items[index].imgUrl;
+  let imgUrl = allImgUrls[index];
   console.log(imgUrl);
 
   let encodedUrl = encodeURIComponent(imgUrl);
   console.log(encodedUrl);
   modalImg.src = `../../api/picture?wid=${vw / 3}&fit=crop&url=${encodedUrl}`;
-  modalName.innerHTML = ListDataObj.lst_items[index].itm_Name;
-  ListDataObj.lst_items[index];
-  modalDescription.innerHTML = ListDataObj.lst_items[index].desc;
-  console.log(ListDataObj.lst_items[index]);
+  //modalName.innerHTML = // ListDataObj.lst_items[index].itm_Name;
+  // ListDataObj.lst_items[index];
+  //modalDescription.innerHTML = ListDataObj.lst_items[index].desc;
+  // console.log(ListDataObj.lst_items[index]);
 };

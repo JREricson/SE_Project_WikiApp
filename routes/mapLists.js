@@ -1,3 +1,5 @@
+fetch = require("node-fetch");
+
 const express = require("express");
 const router = express.Router();
 
@@ -22,13 +24,53 @@ router.get("/:userId/:listId", async (req, res) => {
     userLists = await dbMethods.findNamesOfUserLists(contentOwner.usr_listIds);
     console.log("user lists are", userLists);
   }
+  // make sure will not crahs f no url
+  //use fetch to get image
+  imgUrlList = {};
+  if (listObj && listObj.lst_items) {
+    //sorting through each list item
+    await Promise.all(
+      listObj.lst_items.map(async (item, ndx) => {
+        //finding url
+        let urlParts = item.itm_url.split("/");
+        let wikiPath = urlParts[urlParts.length - 1];
+        console.log(wikiPath);
+
+        let imgServiceRes = await fetch(
+          `https://wiki-image-scraper.herokuapp.com/api/images/?title=${wikiPath}&ct=main`
+        );
+
+        let imgJson = await imgServiceRes.json();
+
+        if (imgJson["images"]) {
+          imgUrlList[ndx] = "https:" + imgJson["images"];
+          console.log("added to the list", imgUrlList);
+          console.log(
+            "the url for the img is \n===========================================================================================================================",
+            imgJson["images"]
+          );
+        }
+      })
+    );
+  }
+
+  //add data to list obj
+
+  //use fetch to get data
+  //add data to list obj
 
   //TODO -- fix this ugly line
   if (typeof contentOwner != "object" || typeof listObj != "object") {
     res.status(404).render("pages/404");
   } else {
     // console.log("--liat -- \n" + listObj, contentOwner);
-    res.render("pages/viewMap", { contentOwner, listObj, userLists });
+    console.log("rendering page");
+    res.render("pages/viewMap", {
+      contentOwner,
+      listObj,
+      userLists,
+      imgUrlList,
+    });
   }
 
   //console.log("content owner -->" + contentOwner);

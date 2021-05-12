@@ -1,5 +1,3 @@
-fetch = require("node-fetch");
-
 let pagelistData = document.getElementById("list-data");
 
 let testDiv = document.getElementById("test-div");
@@ -13,8 +11,6 @@ const getImageFakeService = (url, item) => {
   let wikiPath = urlParts[urlParts.length - 1];
   console.log(wikiPath);
   let itemLink = "";
-
-  fetch;
 
   // switch (wikiPath) {
   //   case "Lake_Huron":
