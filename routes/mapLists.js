@@ -27,6 +27,7 @@ router.get("/:userId/:listId", async (req, res) => {
   // make sure will not crahs f no url
   //use fetch to get image
   imgUrlList = {};
+  textList = {};
   if (listObj && listObj.lst_items) {
     //sorting through each list item
     await Promise.all(
@@ -36,6 +37,7 @@ router.get("/:userId/:listId", async (req, res) => {
         let wikiPath = urlParts[urlParts.length - 1];
         console.log(wikiPath);
 
+        /////image service below-- bring to func:
         let imgServiceRes = await fetch(
           `https://wiki-image-scraper.herokuapp.com/api/images/?title=${wikiPath}&ct=main`
         );
@@ -49,6 +51,25 @@ router.get("/:userId/:listId", async (req, res) => {
             "the url for the img is \n===========================================================================================================================",
             imgJson["images"]
           );
+        }
+        /////image service above-- bring to func:
+
+        //text service
+        let textServiceRes = await fetch(
+          `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}`
+        );
+
+        let textJson = await textServiceRes.json();
+
+        if (textJson["Intro"]) {
+          console.log(JSON.stringify(textJson.Intro));
+          textList[ndx] = JSON.stringify(textJson.Intro);
+          // imgUrlList[ndx] = "https:" + imgJson["Intro"];
+          // console.log("added to the list", imgUrlList);
+          // console.log(
+          //   "the url for the img is \n===========================================================================================================================",
+          //   imgJson["images"]
+          // );
         }
       })
     );
@@ -70,6 +91,7 @@ router.get("/:userId/:listId", async (req, res) => {
       listObj,
       userLists,
       imgUrlList,
+      textList,
     });
   }
 

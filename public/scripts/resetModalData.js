@@ -6,8 +6,12 @@ const modalBtns = document.querySelectorAll(".viewInfoBtn"),
   modalDescription = document.getElementById("modal-list-description");
 
 //getting images from data in html
-let imgUrlsElement = document.getElementById("list-data");
-let allImgUrls = JSON.parse(imgUrlsElement.dataset.imgurls);
+let htmlData = document.getElementById("list-data");
+let allImgUrls = JSON.parse(htmlData.dataset.imgurls);
+
+//getting text from data in html
+
+let allIntoText = JSON.parse(htmlData.dataset.text);
 
 // for (const btn of modalBtns) {
 //   btn.addEventListener("click", function (event) {
@@ -31,6 +35,6 @@ const open_modal = (index) => {
   modalImg.src = `../../api/picture?wid=${vw / 3}&fit=crop&url=${encodedUrl}`;
   //modalName.innerHTML = // ListDataObj.lst_items[index].itm_Name;
   // ListDataObj.lst_items[index];
-  //modalDescription.innerHTML = ListDataObj.lst_items[index].desc;
+  modalDescription.innerHTML = allIntoText[index];
   // console.log(ListDataObj.lst_items[index]);
 };
