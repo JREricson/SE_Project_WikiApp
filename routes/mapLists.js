@@ -28,6 +28,7 @@ router.get("/:userId/:listId", async (req, res) => {
   //use fetch to get image
   imgUrlList = {};
   textList = {};
+  GPSList = {};
   if (listObj && listObj.lst_items) {
     //sorting through each list item
     await Promise.all(
@@ -54,7 +55,7 @@ router.get("/:userId/:listId", async (req, res) => {
         }
         /////image service above-- bring to func:
 
-        //text service
+        //text service --  Intro
         let textServiceRes = await fetch(
           `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}`
         );
@@ -64,12 +65,18 @@ router.get("/:userId/:listId", async (req, res) => {
         if (textJson["Intro"]) {
           console.log(JSON.stringify(textJson.Intro));
           textList[ndx] = JSON.stringify(textJson.Intro);
-          // imgUrlList[ndx] = "https:" + imgJson["Intro"];
-          // console.log("added to the list", imgUrlList);
-          // console.log(
-          //   "the url for the img is \n===========================================================================================================================",
-          //   imgJson["images"]
-          // );
+        }
+
+        //text service -- GPS
+        let textGPSServiceRes = await fetch(
+          `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}/coords`
+        );
+
+        let GPSJson = await textGPSServiceRes.json();
+
+        if (GPSJson) {
+          console.log(JSON.stringify(GPSJson));
+          GPSList[ndx] = JSON.stringify(GPSJson);
         }
       })
     );
@@ -92,6 +99,7 @@ router.get("/:userId/:listId", async (req, res) => {
       userLists,
       imgUrlList,
       textList,
+      GPSList,
     });
   }
 
