@@ -45,7 +45,7 @@ router.get("/:userId/:listId", async (req, res) => {
         let imgJson = await imgServiceRes.json();
 
         if (imgJson["images"]) {
-          imgUrlList[ndx] = "https:" + imgJson["images"];
+          imgUrlList[ndx] = imgJson["images"];
           console.log("added to the list", imgUrlList);
           console.log(
             "the url for the img is \n===========================================================================================================================",
