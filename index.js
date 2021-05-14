@@ -38,14 +38,6 @@ app.use(expressSanitizer());
 //app.use(expressLayouts);
 app.set("view engine", "ejs");
 
-app.get("/", (req, res) => {
-  res.send("test");
-});
-
-app.get("/about", (req, res) => {
-  res.render("pages/about");
-});
-
 ///////////
 //importing routers and seting routes
 
@@ -53,7 +45,7 @@ app.get("/about", (req, res) => {
 app.use("/lists", require("./routes/mapLists"));
 
 //authorization (logins/registration/etc)
-app.use("/auth", require("./routes/auth"));
+app.use("/", require("./routes/auth"));
 
 //api
 app.use("/api", require("./routes/api"));
