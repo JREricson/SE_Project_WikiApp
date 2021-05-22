@@ -1,7 +1,33 @@
 const User = require("../models/user"),
-  List = require("../models/list");
-
+  List = require("../models/list"),
+  bcrypt = require("bcryptjs");
 moduleObj = {};
+
+///////////////
+//create methods
+///////////////
+
+/**
+ *Creates a new user based on params with encrypted pw password
+ * @param {*} name
+ * @param {*} password
+ * @param {*} email
+ */
+moduleObj.createUser = async (userName, password) => {
+  let newUser = new User({
+    usr_name: userName,
+    usr_password: password,
+  });
+  console.log("new user is: ", newUser);
+  //encrypting password
+  encryptPasswordAndSaveUser(newUser);
+  console.log("enc user is: ", newUser);
+  return newUser;
+};
+
+/////////////
+//read methods
+//////////////
 
 /**
  * tries to find a user in the database, ruturns null if none found
@@ -67,5 +93,28 @@ moduleObj.findNamesOfUserLists = async (listOfListIds) => {
     return [];
   }
 };
+
+/////////////////
+//helper functions
+/////////////////
+
+/**
+ * Changes password to encrypted password and saves user to database
+ * @param {*} newUser
+ */
+const encryptPasswordAndSaveUser = (newUser) => {
+  console.log("new user is: ", newUser);
+  bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(newUser.usr_password, salt, (err, hash) => {
+      console.log("pw before ", newUser.usr_password);
+      ///   if (err) throw err;
+      newUser.usr_password = hash;
+      console.log("pw aFTER ", newUser.usr_password);
+      newUser.save().catch((err) => console.log(err));
+    });
+  });
+};
+
+///////////////////////////
 
 module.exports = moduleObj;

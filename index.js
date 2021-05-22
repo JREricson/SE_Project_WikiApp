@@ -1,12 +1,18 @@
-const express = require("express");
-const env = require("dotenv").config();
+const express = require("express"),
+  env = require("dotenv").config(),
+  expressSanitizer = require("express-sanitizer"),
+  methodOverride = require("method-override"),
+  path = require("path"),
+  mongoose = require("mongoose"),
+  session = require("express-session"),
+  flash = require("connect-flash"),
+  passport = require("passport");
 
-const expressSanitizer = require("express-sanitizer");
-const methodOverride = require("method-override");
-const path = require("path");
-const mongoose = require("mongoose");
-const session = require("express-session");
-//const MongoDBStore = require("connect-mongo")(session);
+const MongoStore = require("connect-mongo");
+//const mongoDBStore = require("connect-mongodb-session")(session);
+
+// Passport Config
+require("./config/passport")(passport);
 
 //Setting up database -- using MongoAtlas
 //url for database
@@ -37,6 +43,56 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(expressSanitizer());
 //app.use(expressLayouts);
 app.set("view engine", "ejs");
+
+//to store session on mongoAtlas
+console.log(mongoUrl);
+console.log(process.env.SECRET);
+// const store = MongoDBStore.create({
+//   url: mongoUrl,
+//   secret: process.env.SECRET,
+//   // touchAfter: 24 * 60 * 60, // 1 day
+// });
+
+// store.on("error", (err) => {
+//   console.log("err storing session: ", err);
+// });
+
+//Express session
+const sessionConfig = {
+  store: MongoStore.create({
+    mongoUrl: mongoUrl,
+
+    touchAfter: 24 * 60 * 60, // 1 day
+  }),
+  secret: "process.env.SECRET",
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // one week
+    maxAge: 1000 * 60 * 60 * 24 * 7, // one week
+  },
+};
+app.use(session(sessionConfig));
+
+// Connect flash
+app.use(flash());
+
+//method methodOverride
+app.use(methodOverride("_method"));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use((req, res, next) => {
+  //flash
+  res.locals.success_msg = req.flash("successMsg");
+  res.locals.error_msg = req.flash("errorMsg");
+  res.locals.error = req.flash("error");
+  //path dir for ejs templates
+  res.locals.appDir = path.dirname(require.main.filename);
+  next();
+});
 
 ///////////
 //importing routers and seting routes
