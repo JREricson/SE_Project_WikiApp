@@ -4,15 +4,19 @@
 var middlewareObj = {};
 
 middlewareObj.isCurUserContentOwner = (req, res, next) => {
+  console.log("access attempt");
+  console.log("by ", req.user._id);
+  console.log("for ", req.params.userId);
   if (req.isAuthenticated()) {
-    if (req.user._id.equals(req.params.id)) {
+    if (req.user._id.equals(req.params.userId)) {
+      console.log("onwer confirmed");
       next();
     } else {
-      req.flash("you need to be logged in as the owner to go there");
+      req.flash("error", "you need to be logged in as the owner to go there");
       res.redirect("/login");
     }
   } else {
-    req.flash("you need to be logged in as the owner to go there");
+    req.flash("error", "you need to be logged in as the owner to go there");
     res.redirect("/login");
   }
 };

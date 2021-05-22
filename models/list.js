@@ -13,13 +13,7 @@ const ListSchema = new Schema({
         type: String,
         default: "",
       },
-      // longitude: {
-      //   type: String,
-      //   default: "",
-      // },
-      // latitude: {
-      //   type: String,
-      //   default: "",
+
       itm_url: {
         type: String,
         default: "",

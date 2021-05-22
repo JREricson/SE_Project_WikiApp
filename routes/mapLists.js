@@ -4,7 +4,8 @@ const express = require("express");
 const router = express.Router();
 
 //local modules
-const dbMethods = require("../helpers/databaseMethods");
+const dbMethods = require("../helpers/databaseMethods"),
+  authMiddle = require("../middle/authMiddle");
 
 //mongo models
 const User = require("../models/user");
@@ -109,5 +110,13 @@ router.get("/:userId/:listId", async (req, res) => {
 
   //will later need user that is logged in
 });
+router.get(
+  "/:userId/:listId/edit",
+  authMiddle.isCurUserContentOwner,
+  async (req, res) => {
+    contentOwner = req.user;
+    res.render("pages/editMap", contentOwner);
+  }
+);
 
 module.exports = router;
