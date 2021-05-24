@@ -10,6 +10,7 @@ const dbMethods = require("../helpers/databaseMethods"),
 //mongo models
 const User = require("../models/user");
 const List = require("../models/list");
+const { Promise } = require("mongoose");
 
 router.get("/:userId/:listId", async (req, res) => {
   //need userItems
@@ -41,6 +42,69 @@ router.get("/:userId/:listId", async (req, res) => {
 
   //will later need user that is logged in
 });
+
+router.put(
+  "/:userId/:listId/edit",
+  // authMiddle.isCurUserContentOwner,
+  async (req, res) => {
+    console.log("post attempted");
+    let { newListItemsChecked, listNames1, listNames, wikiUrls, listTitle } =
+      req.body;
+    console.log("n: ", newListItemsChecked);
+    console.log("l: ", listNames);
+    console.log("u: ", wikiUrls);
+    console.log("t: ", listTitle);
+    console.log("test: ", listNames1);
+    let errors = [];
+    let textJson, GPSJson;
+
+    await Promise.all(
+      newListItemsChecked.map(async (item) => {
+        console.log("n: ", newListItemsChecked);
+        if (listNames[item] !== "" && wikiUrls[item] !== "") {
+          //getting end of url from provided url
+          let urlParts = wikiUrls[item].split("/");
+          let wikiPath = urlParts[urlParts.length - 1];
+          try {
+            textJson = await getTextJsonFromService(wikiPath);
+          } catch {
+            console.log("kkkkk");
+            errors.push("could not process url " + wikiUrls[item]);
+          }
+          console.log(
+            "========================================================"
+          );
+          try {
+            GPSJson = await getGPSJson(wikiPath);
+            GPSJson["Error"] &&
+              console.log("dare be an error : ", GPSJson["Error"]);
+            errors.push("no GPS coordinates for url " + wikiUrls[item]);
+          } catch {
+            errors.push("could get GPS coordinates for url " + wikiUrls[item]);
+          }
+
+          console.log(JSON.stringify(GPSJson));
+        }
+      })
+    );
+
+    // } catch (error) {
+    //   if (!textJson) {
+    //     errors.append = "could not process url " + wikiUrls[item];
+    //     console.log("err");
+    //   } else if (!GPSJson) {
+    //     errors.append = "could get GPS coordinates for url " + wikiUrls[item];
+    //   } else {
+    //     console.log(wikiUrls[item] + "was accepted");
+    //     //add to database
+    //   }
+    // }
+
+    console.log("errs " + JSON.stringify(errors));
+    res.redirect(`/lists/${req.params.userId}/${req.params.listId}/edit`);
+  }
+);
+
 router.get(
   "/:userId/:listId/edit",
   // authMiddle.isCurUserContentOwner,
@@ -113,11 +177,7 @@ async function getListDetailsFromServices(req) {
         }
         /////image service above-- bring to func:
         //text service --  Intro
-        let textServiceRes = await fetch(
-          `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}`
-        );
-
-        let textJson = await textServiceRes.json();
+        let textJson = await getTextJsonFromService(wikiPath);
 
         if (textJson["Intro"]) {
           // console.log(JSON.stringify(textJson.Intro));
@@ -125,11 +185,7 @@ async function getListDetailsFromServices(req) {
         }
 
         //text service -- GPS
-        let textGPSServiceRes = await fetch(
-          `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}/coords`
-        );
-
-        let GPSJson = await textGPSServiceRes.json();
+        let GPSJson = await getGPSJson(wikiPath);
 
         if (GPSJson) {
           //console.log(JSON.stringify(GPSJson));
@@ -152,7 +208,7 @@ async function getListDetailsFromServices(req) {
             let gpsParsed = JSON.parse(GPSList[ndx]); //GPSList[ndx]
             let lat = gpsParsed["lat"];
             let lon = gpsParsed["lon"];
-
+            console.log(gpsParsed);
             mapServiceJsonPost[ndx] = {
               title: `t${ndx}`, //item.itm_Name
               coordinates: {
@@ -190,4 +246,21 @@ async function getListDetailsFromServices(req) {
     });
   }
   return { contentOwner, listObj, userLists };
+}
+async function getGPSJson(wikiPath) {
+  let textGPSServiceRes = await fetch(
+    `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}/coords`
+  );
+
+  let GPSJson = await textGPSServiceRes.json();
+  return GPSJson;
+}
+
+async function getTextJsonFromService(wikiPath) {
+  let textServiceRes = await fetch(
+    `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}`
+  );
+
+  let textJson = await textServiceRes.json();
+  return textJson;
 }

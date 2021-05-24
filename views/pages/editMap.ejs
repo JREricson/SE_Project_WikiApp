@@ -42,7 +42,7 @@
   </div>
 
 
-<form action="">
+<form action=<%= `/lists/${contentOwner._id}/${listObj._id }/edit?_method=PUT`  %> method="post">
     <h2>change title below</h2>
     <div class="input-group">
         <div class="input-group-prepend">
@@ -139,11 +139,11 @@
                 <div class="input-group">
                    
                     <div class="input-group-prepend">
-                      <span class="input-group-text" id=""><input type="checkBox" id="checkBox<%= newNdx%>" class="form-check-input  me-1 list-checkbox" name="newListItemsChecked">
+                      <span class="input-group-text" id=""><input type="checkBox" value="<%= newNdx %>"id="checkBox<%= newNdx%>" class="form-check-input  me-1 list-checkbox" name="newListItemsChecked">
                       </span>
                     </div>
-                   <input type="text" id="newItemName<%= newNdx%>"class="form-control" placeHolder="Enter List Item name">
-                    <input type="text" id="newUrl<%= newNdx%>" class="form-control" placeHolder="Enter wikipedia url">
+                   <input type="text" id="newItemName<%= newNdx%>"class="form-control" name ="listNames%>" placeHolder="Enter List Item name">
+                    <input type="text" id="newUrl<%= newNdx%>" class="form-control" name="wikiUrls" placeHolder="Enter wikipedia url">
                   </div>
                 </li>
                    
