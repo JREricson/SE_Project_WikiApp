@@ -1,6 +1,5 @@
 const mongoose = require("mongoose"),
-  Schema = mongoose.Schema,
-  ObjectId = Schema.ObjectId;
+  Schema = mongoose.Schema;
 
 const ListSchema = new Schema({
   lst_name: {

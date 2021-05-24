@@ -1,4 +1,189 @@
 
-<% let displayName = "" %>
-<% displayName = typeof contentOwner  != "undefined" ?  contentOwner.usr_name : ""%>
-<h1>hello <%= displayName %></h1>
+<%- include("../components/header") %>
+
+
+<!-- style shhet for leaflet map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="crossorigin=""/>
+
+<style src="../../../styles/modal.css"></style>
+<%- include("../components/navbar") %>
+
+
+
+<% let listName = "test List" %>
+<% let listItems = [{"name": "item1", "desc": "testy test"},{"name":  "name2", "desc": "another testy test"}] %>
+<div id="list-data" data-imgurls= "<%=JSON.stringify(imgUrlList) %>" data-gps= "<%=JSON.stringify(GPSList) %>"  data-text= "<%=JSON.stringify(textList) %>" data-list= "<%=JSON.stringify(listObj) %>">
+
+<div class="dropdown show">
+    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="userListMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      User's Lists
+    </a>
+  
+    <div class="dropdown-menu" aria-labelledby="userListMenu">
+       
+        <% if (userLists && userLists.length>0){%>
+
+           <% userLists.forEach(list => { %>
+             
+
+        <a class="dropdown-item" href=<%=`./${Object.values(list)}`%>>   <%=Object.keys(list) %></a>
+           <% } )%>
+  
+        <%}%>
+
+   
+    </div>
+  </div>
+
+
+<form action="">
+    <h2>change title below</h2>
+    <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">List title</span>
+        </div>
+        <input type="text" aria-label="title" name = "listTitle" value ="<%=listObj.lst_name %>" class="form-control">
+
+      </div>
+
+    <h1 class="listTitle"><%=listObj.lst_name %></h1>
+
+
+
+
+
+
+
+<div class="row">
+    <div class="col-12 col-md-8">
+
+
+        <%- include("../components/map") %>
+    </div>
+    <div class="col-6 col-md-4">
+       
+<% if (listObj.lst_items) {%>
+    <ul class="list-group ItemL">
+    <% listObj.lst_items.forEach((item, ndx)=>{ %>
+        <li class="list-group-item"><%= item.itm_Name%><a href="#item-info-modal" data-toggle="modal"><button  data-index=<%=ndx%> type="button" class="btn btn-primary btn-sm viewInfoBtn " data-toggle="modal" data-target="#myModal"   onClick="open_modal(<%= ndx %>)" >view</button></a></li>
+   
+
+        <%  }) %>
+
+    </ul>
+
+    <% }%>
+
+
+    </div>
+  </div>
+
+
+  <div id=test-div></div>
+
+
+      <div id="item-info-modal" class="modal fade "> 
+        
+      <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+             <div class="modal-header"> 
+                   <h4 id="modal-list-name" class="modal-title"></h4>
+             </div>
+           
+       <div class="modal-body"> 
+         
+           <img class="modal-image" id="modal-image" src="" alt="">
+           <p id="modal-list-description"></p>
+
+           <p></p>
+           <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+       </div>
+       
+     
+        </div> 
+      </div>
+        
+   </div>
+  
+</div>
+
+
+
+
+<div>
+    <h2>Current Items</h2>
+    <% if (listObj.lst_items) {%>
+        <ul class="list-group curListItems">
+        <% listObj.lst_items.forEach((item, ndx)=>{ %>
+            <li class="list-group-item"><%= item.itm_Name%></li>
+       
+    
+            <%  }) %>
+    
+        </ul>
+    
+        <% }%>
+
+
+    <!-- list of new items to be added -->
+    <h1>Add new Items to list by filling in feilds and checking box. Hit submit when done</h1>
+        <ul class="list-group newListItems">
+            <% for( newNdx=0; newNdx<20; newNdx++){ %>
+                <li>
+                <div class="input-group">
+                   
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" id=""><input type="checkBox" id="checkBox<%= newNdx%>" class="form-check-input  me-1 list-checkbox" name="newListItemsChecked">
+                      </span>
+                    </div>
+                   <input type="text" id="newItemName<%= newNdx%>"class="form-control" placeHolder="Enter List Item name">
+                    <input type="text" id="newUrl<%= newNdx%>" class="form-control" placeHolder="Enter wikipedia url">
+                  </div>
+                </li>
+                   
+                
+                        <%  } %>
+              
+                    </ul>
+                
+
+
+      <!-- create a list of text fields , wiki address and item name-->
+
+
+
+
+        
+
+</div>
+
+</form>
+
+<div id="mapid"></div>
+
+<!-- temp script -->
+
+<script id="mapScript">
+
+    
+</script>
+<!-- script for leaflet map -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="crossorigin=""></script>
+
+
+<script>
+    let mapScriptInner=  "var test = L.map(\u0027test\u0027);                         L.tileLayer(\u0027https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=aCYY69fDkH1ofyZKSBPK\u0027, {tileSize: 512, maxZoom: 18, zoomOffset: -1, minZoom: 1, zoomSnap:0, zoomDelta: 0.25,                         crossOrigin: true, atribution: \u0027\u003ca href=\"https://www.maptiler.com/copyright/\" target=\"_blank\"\u003e\u00a9 MapTiler\u003c/a\u003e \u003ca href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\"\u003e\u00a9 OpenStreetMap contributors\u003c/a\u003e\u0027}).addTo(test);var bounds = new L.LatLngBounds([[12, 13], [12, 13]]); test.fitBounds(bounds);var testyTest = L.marker([12,13]).addTo(test);testyTest.bindPopup(\"testyTest\").openPopup();var testyTest2 = L.marker([12,13]).addTo(test);testyTest2.bindPopup(\"testyTest2\").openPopup();"
+    let mapScript = document.getElementById("mapScript");
+    mapScript.innerHTML = mapScriptInner
+
+</script>
+
+
+<script src="../../../scripts/viewMapSetup.js"></script>
+<!-- <script src="../../scripts/fakeImageService.js"></script> -->
+<script src="../../../scripts/fakeMapService.js"></script>
+<!-- <script src="../../scripts/fakeWikiScraper.js"></script> -->
+<script src="../../../scripts/resetModalData.js"></script>
+
+
+ <%- include("../components/footer") %>

@@ -14,6 +14,60 @@ const List = require("../models/list");
 router.get("/:userId/:listId", async (req, res) => {
   //need userItems
 
+  let { contentOwner, listObj, userLists } = await getListDetailsFromServices(
+    req
+  );
+
+  //TODO -- fix this ugly line
+  if (typeof contentOwner != "object" || typeof listObj != "object") {
+    res.status(404).render("pages/404");
+  } else {
+    // console.log("--liat -- \n" + listObj, contentOwner);
+    console.log("rendering page");
+    res.render("pages/viewMap", {
+      contentOwner,
+      listObj,
+      userLists,
+      imgUrlList,
+      textList,
+      GPSList,
+    });
+  }
+
+  //console.log("content owner -->" + contentOwner);
+  //NeedListItems
+  //redirect if no user or list
+
+  //will later need user that is logged in
+});
+router.get(
+  "/:userId/:listId/edit",
+  // authMiddle.isCurUserContentOwner,
+  async (req, res) => {
+    let { contentOwner, listObj, userLists } = await getListDetailsFromServices(
+      req
+    );
+
+    //TODO -- fix this ugly line
+    if (typeof contentOwner != "object" || typeof listObj != "object") {
+      res.status(404).render("pages/404");
+    } else {
+      // console.log("--liat -- \n" + listObj, contentOwner);
+      console.log("rendering page");
+      res.render("pages/editMap", {
+        contentOwner,
+        listObj,
+        userLists,
+        imgUrlList,
+        textList,
+        GPSList,
+      });
+    }
+  }
+);
+
+module.exports = router;
+async function getListDetailsFromServices(req) {
   let contentOwner = await dbMethods.findUserbyId(req.params.userId);
 
   let listObj;
@@ -55,7 +109,6 @@ router.get("/:userId/:listId", async (req, res) => {
           );
         }
         /////image service above-- bring to func:
-
         //text service --  Intro
         let textServiceRes = await fetch(
           `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}`
@@ -82,41 +135,5 @@ router.get("/:userId/:listId", async (req, res) => {
       })
     );
   }
-
-  //add data to list obj
-
-  //use fetch to get data
-  //add data to list obj
-
-  //TODO -- fix this ugly line
-  if (typeof contentOwner != "object" || typeof listObj != "object") {
-    res.status(404).render("pages/404");
-  } else {
-    // console.log("--liat -- \n" + listObj, contentOwner);
-    console.log("rendering page");
-    res.render("pages/viewMap", {
-      contentOwner,
-      listObj,
-      userLists,
-      imgUrlList,
-      textList,
-      GPSList,
-    });
-  }
-
-  //console.log("content owner -->" + contentOwner);
-  //NeedListItems
-  //redirect if no user or list
-
-  //will later need user that is logged in
-});
-router.get(
-  "/:userId/:listId/edit",
-  authMiddle.isCurUserContentOwner,
-  async (req, res) => {
-    contentOwner = req.user;
-    res.render("pages/editMap", contentOwner);
-  }
-);
-
-module.exports = router;
+  return { contentOwner, listObj, userLists };
+}

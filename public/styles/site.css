@@ -84,3 +84,16 @@ ItemList {
   background-color: rgb(36, 35, 35);
   color: rgb(209, 209, 209);
 }
+
+/* for map info */
+#mapid {
+  height: 180px;
+}
+
+.list-checkbox {
+  padding: 5;
+  margin: 0;
+  transform: scale(2.5);
+  position: relative;
+  z-index: 1;
+}

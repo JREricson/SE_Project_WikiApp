@@ -33,7 +33,9 @@ const open_modal = (index) => {
 
   let encodedUrl = encodeURIComponent(imgUrl);
   console.log(encodedUrl);
-  modalImg.src = `../../api/picture?wid=${vw / 3}&fit=crop&url=${encodedUrl}`;
+  modalImg.src = `https://create-a-map.herokuapp.com/api/picture?wid=${
+    vw / 3
+  }&fit=crop&url=${encodedUrl}`;
   modalName.innerHTML = theListData.lst_items[index].itm_Name;
   // ListDataObj.lst_items[index];
   modalDescription.innerHTML = allIntoText[index];
