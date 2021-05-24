@@ -34,3 +34,11 @@
 {"_id":{"$oid":"608d055c499b631f4c74c914"},"lst_name":"Great Lakes","lst_items":[{"itm_Name":"Lake Huron","itm_url":"https://en.wikipedia.org/wiki/Lake_Huron","_id":{"$oid":"608d055c499b631f4c74c915"}},{"itm_Name":"Lake Superior","itm_url":"https://en.wikipedia.org/wiki/Lake_Superior","_id":{"$oid":"608d055c499b631f4c74c916"}},{"itm_Name":"Lake Michigan","itm_url":"https://en.wikipedia.org/wiki/Lake_Michigan","_id":{"$oid":"608d055c499b631f4c74c917"}},{"itm_Name":"Lake Erie","itm_url":"https://en.wikipedia.org/wiki/Lake_Erie","_id":{"$oid":"608d055c499b631f4c74c918"}},{"itm_Name":"Lake Ontario","itm_url":"https://en.wikipedia.org/wiki/Lake_Ontario","_id":{"$oid":"608d055c499b631f4c74c919"}}],"__v":{"$numberInt":"0"}}
 
 {"_id":{"$oid":"608d055c499b631f4c74c91a"},"lst_name":"Great LakesImportant Deserts","lst_items":[{"itm_Name":"Gobi Desert","itm_url":"https://en.wikipedia.org/wiki/Gobi_Desert","_id":{"$oid":"608d055c499b631f4c74c91b"}},{"itm_Name":"Sahara","itm_url":"https://en.wikipedia.org/wiki/Sahara","_id":{"$oid":"608d055c499b631f4c74c91c"}}],"__v":{"$numberInt":"0"}}
+
+
+<script>
+    let mapScriptInner=  "var test = L.map(\u0027test\u0027);                         L.tileLayer(\u0027https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=aCYY69fDkH1ofyZKSBPK\u0027, {tileSize: 512, maxZoom: 18, zoomOffset: -1, minZoom: 1, zoomSnap:0, zoomDelta: 0.25,                         crossOrigin: true, atribution: \u0027\u003ca href=\"https://www.maptiler.com/copyright/\" target=\"_blank\"\u003e\u00a9 MapTiler\u003c/a\u003e \u003ca href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\"\u003e\u00a9 OpenStreetMap contributors\u003c/a\u003e\u0027}).addTo(test);var bounds = new L.LatLngBounds([[12, 13], [12, 13]]); test.fitBounds(bounds);var testyTest = L.marker([12,13]).addTo(test);testyTest.bindPopup(\"testyTest\").openPopup();var testyTest2 = L.marker([12,13]).addTo(test);testyTest2.bindPopup(\"testyTest2\").openPopup();"
+    let mapScript = document.getElementById("mapScript");
+    mapScript.innerHTML = mapScriptInner
+
+</script>
