@@ -1,0 +1,13 @@
+
+<% if(typeof error_List !='undefined') {%>
+    <% error_List.forEach((err)=>{%>
+
+<div class="alert alert-warning" role="alert">
+    <%=err %>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<%}); %> 
+<% } %> 

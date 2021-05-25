@@ -89,6 +89,7 @@ app.use((req, res, next) => {
   res.locals.success_msg = req.flash("successMsg");
   res.locals.error_msg = req.flash("errorMsg");
   res.locals.error = req.flash("error");
+  res.locals.error_List = req.flash("errorList");
   //path dir for ejs templates
   res.locals.appDir = path.dirname(require.main.filename);
   next();

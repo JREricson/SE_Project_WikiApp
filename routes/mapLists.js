@@ -48,59 +48,38 @@ router.put(
   // authMiddle.isCurUserContentOwner,
   async (req, res) => {
     console.log("post attempted");
-    let { newListItemsChecked, listNames1, listNames, wikiUrls, listTitle } =
-      req.body;
+    let { newListItemsChecked, listNames, wikiUrls, listTitle } = req.body;
     console.log("n: ", newListItemsChecked);
     console.log("l: ", listNames);
     console.log("u: ", wikiUrls);
     console.log("t: ", listTitle);
-    console.log("test: ", listNames1);
+
     let errors = [];
     let textJson, GPSJson;
+    console.log("type is", typeof newListItemsChecked);
+    if (typeof newListItemsChecked === "string") {
+      newListItemsChecked = [newListItemsChecked];
+    }
+    //get errors or update
+    try {
+      ({ textJson, GPSJson } = await generateErrorsAndAddNewListItems(
+        newListItemsChecked,
+        listNames,
+        wikiUrls,
+        textJson,
+        errors,
+        GPSJson,
+        req
+      ));
+    } catch {}
 
-    await Promise.all(
-      newListItemsChecked.map(async (item) => {
-        console.log("n: ", newListItemsChecked);
-        if (listNames[item] !== "" && wikiUrls[item] !== "") {
-          //getting end of url from provided url
-          let urlParts = wikiUrls[item].split("/");
-          let wikiPath = urlParts[urlParts.length - 1];
-          try {
-            textJson = await getTextJsonFromService(wikiPath);
-          } catch {
-            console.log("kkkkk");
-            errors.push("could not process url " + wikiUrls[item]);
-          }
-          console.log(
-            "========================================================"
-          );
-          try {
-            GPSJson = await getGPSJson(wikiPath);
-            GPSJson["Error"] &&
-              console.log("dare be an error : ", GPSJson["Error"]);
-            errors.push("no GPS coordinates for url " + wikiUrls[item]);
-          } catch {
-            errors.push("could get GPS coordinates for url " + wikiUrls[item]);
-          }
-
-          console.log(JSON.stringify(GPSJson));
-        }
-      })
-    );
-
-    // } catch (error) {
-    //   if (!textJson) {
-    //     errors.append = "could not process url " + wikiUrls[item];
-    //     console.log("err");
-    //   } else if (!GPSJson) {
-    //     errors.append = "could get GPS coordinates for url " + wikiUrls[item];
-    //   } else {
-    //     console.log(wikiUrls[item] + "was accepted");
-    //     //add to database
-    //   }
-    // }
+    //update title if needed
+    await updateTitle(req, listTitle);
 
     console.log("errs " + JSON.stringify(errors));
+    if (errors.length > 0) {
+      req.flash("errorList", errors);
+    }
     res.redirect(`/lists/${req.params.userId}/${req.params.listId}/edit`);
   }
 );
@@ -132,6 +111,85 @@ router.get(
 );
 
 module.exports = router;
+async function generateErrorsAndAddNewListItems(
+  newListItemsChecked,
+  listNames,
+  wikiUrls,
+  textJson,
+  errors,
+  GPSJson,
+  req
+) {
+  await Promise.all(
+    newListItemsChecked.map(async (item) => {
+      console.log("n: ", newListItemsChecked);
+      if (listNames[item] !== "" && wikiUrls[item] !== "") {
+        let urlPass = false;
+        let gpsPass = false;
+        //getting end of url from provided url
+        let urlParts = wikiUrls[item].split("/");
+        let wikiPath = urlParts[urlParts.length - 1];
+        try {
+          textJson = await getTextJsonFromService(wikiPath);
+          urlPass = true;
+        } catch {
+          errors.push("could not process url " + wikiUrls[item]);
+        }
+        console.log("========================================================");
+        try {
+          GPSJson = await getGPSJson(wikiPath);
+          if (GPSJson["Error"]) {
+            errors.push("no GPS coordinates for url " + wikiUrls[item]);
+          } else {
+            gpsPass = true;
+          }
+        } catch {
+          errors.push("could get GPS coordinates for url " + wikiUrls[item]);
+        }
+        if (gpsPass && urlPass) {
+          console.log(
+            `adding "${listNames[item]}" to db\n---------------------`
+          );
+          //TODO -- add verification of ownership
+
+          await List.findByIdAndUpdate(req.params.listId, {
+            $push: {
+              lst_items: {
+                itm_Name: listNames[item],
+                itm_url: wikiUrls[item],
+              },
+            },
+          });
+        } else {
+          console.log(
+            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          );
+        }
+
+        console.log(JSON.stringify(GPSJson));
+      }
+    })
+  );
+  return { textJson, GPSJson };
+}
+
+async function updateTitle(req, listTitle) {
+  let theList = await List.findById(req.params.listId);
+
+  if (theList && theList.lst_name) {
+    if (theList.lst_name !== listTitle) {
+      console.log("changing title");
+      await List.findByIdAndUpdate(
+        req.params.listId,
+        { lst_name: listTitle },
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
+  }
+}
+
 async function getListDetailsFromServices(req) {
   let contentOwner = await dbMethods.findUserbyId(req.params.userId);
 
@@ -205,17 +263,19 @@ async function getListDetailsFromServices(req) {
         await Promise.all(
           listObj.lst_items.map(async (item, ndx) => {
             console.log("at ndx ", item.itm_Name);
-            let gpsParsed = JSON.parse(GPSList[ndx]); //GPSList[ndx]
-            let lat = gpsParsed["lat"];
-            let lon = gpsParsed["lon"];
-            console.log(gpsParsed);
-            mapServiceJsonPost[ndx] = {
-              title: `t${ndx}`, //item.itm_Name
-              coordinates: {
-                lat: Number(lat),
-                lon: Number(lon),
-              },
-            };
+            if (GPSList[ndx]) {
+              let gpsParsed = JSON.parse(GPSList[ndx]); //GPSList[ndx]
+              let lat = gpsParsed["lat"];
+              let lon = gpsParsed["lon"];
+              console.log(gpsParsed);
+              mapServiceJsonPost[ndx] = {
+                title: `t${ndx}`, //item.itm_Name
+                coordinates: {
+                  lat: Number(lat),
+                  lon: Number(lon),
+                },
+              };
+            }
           })
         );
         console.log("mapPost is ", mapServiceJsonPost);
