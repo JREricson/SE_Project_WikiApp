@@ -14,15 +14,13 @@ const User = require("../models/user");
 
 router.get("/login", (req, res) => {
   res.render("pages/login");
-  req.user && console.log("req user is ", req.user);
-  !req.user && console.log("no user");
 });
 
 //handle login
 router.post("/login", async (req, res, next) => {
   await passport.authenticate("local", {
-    successRedirect: `/`, //${req.user._id}/profile`, //TODO -- change route
-    failureRedirect: "/login/",
+    successRedirect: `/lists/new`, //${req.user._id}/profile`, //TODO -- change route
+    failureRedirect: "/login",
     failureFlash: true,
   })(req, res, next);
 });

@@ -2,15 +2,22 @@
 <%- include("../components/header") %>
 
 
+<!-- style shhet for leaflet map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="crossorigin=""/>
+
+<!-- script for leaflet map -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="crossorigin=""></script>
 
 
-<style src="../../styles/modal.css"></style>
+<style src="../../../styles/modal.css"></style>
+
+
 <%- include("../components/navbar") %>
 
 
 
-<% let listName = "test List" %>
-<% let listItems = [{"name": "item1", "desc": "testy test"},{"name":  "name2", "desc": "another testy test"}] %>
+<a href="./<%= listObj._id %>/edit" class="btn btn-primary">Edit List</a>
+
 <div id="list-data" data-imgurls= "<%=JSON.stringify(imgUrlList) %>" data-gps= "<%=JSON.stringify(GPSList) %>"  data-text= "<%=JSON.stringify(textList) %>" data-list= "<%=JSON.stringify(listObj) %>">
 
 <div class="dropdown show">
@@ -25,7 +32,7 @@
            <% userLists.forEach(list => { %>
              
 
-        <a class="dropdown-item" href=<%=`./${Object.values(list)}`%>>   <%=Object.keys(list) %></a>
+        <a class="dropdown-item" href="<%=`./${Object.values(list)}`%>">   <%=Object.keys(list) %></a>
            <% } )%>
   
         <%}%>
@@ -35,8 +42,8 @@
   </div>
 
 
+  <h1 class="listTitle"><%=listObj.lst_name %></h1>
 
-<h1 class="listTitle"><%=listObj.lst_name %></h1>
 
 
 
@@ -44,9 +51,10 @@
 
 <div class="row">
     <div class="col-12 col-md-8">
+        <div id="mapid"></div>
 
 
-        <%- include("../components/map") %>
+
     </div>
     <div class="col-6 col-md-4">
        
@@ -65,6 +73,7 @@
 
     </div>
   </div>
+
 
 
 
@@ -103,15 +112,33 @@
 
 
 
+<div id="map-script-string" data-script="<%= mapScript %> "></div>
+
+<script id="mapScript">
+<%- mapScript %> 
+</script>
+<!-- <script src="../../../scripts/mapService.js"></script> -->
+
+
+ 
 
 
 
 
-<script src="../../scripts/viewMapSetup.js"></script>
+
+
+
+
+
+
+<script src="../../../scripts/viewMapSetup.js"></script>
 <!-- <script src="../../scripts/fakeImageService.js"></script> -->
-<script src="../../scripts/fakeMapService.js"></script>
+<script src="../../../scripts/fakeMapService.js"></script>
 <!-- <script src="../../scripts/fakeWikiScraper.js"></script> -->
-<script src="../../scripts/resetModalData.js"></script>
+<script src="../../../scripts/resetModalData.js"></script>
 
 
  <%- include("../components/footer") %>
+ 
+
+

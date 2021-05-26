@@ -13,11 +13,10 @@
 
 
 <%- include("../components/navbar") %>
+<a href="." class="btn btn-primary">Done Editing</a>
 
 
 
-<% let listName = "test List" %>
-<% let listItems = [{"name": "item1", "desc": "testy test"},{"name":  "name2", "desc": "another testy test"}] %>
 <div id="list-data" data-imgurls= "<%=JSON.stringify(imgUrlList) %>" data-gps= "<%=JSON.stringify(GPSList) %>"  data-text= "<%=JSON.stringify(textList) %>" data-list= "<%=JSON.stringify(listObj) %>">
 
 <div class="dropdown show">
@@ -30,9 +29,9 @@
         <% if (userLists && userLists.length>0){%>
 
            <% userLists.forEach(list => { %>
-             
 
-        <a class="dropdown-item" href=<%=`./${Object.values(list)}`%>>   <%=Object.keys(list) %></a>
+            <%=`./${Object.values(list)}/edit`%>
+            <a class="dropdown-item" href=>   <%=Object.keys(list) %></a>
            <% } )%>
   
         <%}%>

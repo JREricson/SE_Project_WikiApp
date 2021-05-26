@@ -146,7 +146,7 @@ router.post(
     contentOwner.save();
 
     //redirect to new list
-    res.redirect(`/${contentOwner._id}/${newListId}/edit`);
+    res.redirect(`${contentOwner._id}/${newListId}/edit`);
   }
 );
 
@@ -319,8 +319,10 @@ async function getListDetailsFromServices(req) {
               let lat = gpsParsed["lat"];
               let lon = gpsParsed["lon"];
               console.log(gpsParsed);
+              let titleStr = item.itm_Name;
+              titleStr = titleStr.replace(" ", "_");
               mapServiceJsonPost[ndx] = {
-                title: `t${ndx}`, //item.itm_Name
+                title: `${titleStr}`, //item.itm_Name
                 coordinates: {
                   lat: Number(lat),
                   lon: Number(lon),
