@@ -123,14 +123,14 @@ router.get(
   }
 );
 //route for new list item
-router.get("/new", async (req, res) => {
+router.get("/new", authMiddle.isLoggedIn, async (req, res) => {
   let userLists = await dbMethods.findNamesOfUserLists(req.user.usr_listIds);
   let authUser = req.user;
   res.render(`pages/newListPage`, { authUser, userLists });
 });
 
 //handling new List item
-router.post("/new", async (req, res) => {
+router.post("/new", authMiddle.isLoggedIn, async (req, res) => {
   console.log("in post req for new list");
 
   //get values from req
