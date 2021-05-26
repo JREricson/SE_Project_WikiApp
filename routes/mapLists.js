@@ -38,6 +38,7 @@ router.get("/:userId/:listId", async (req, res) => {
 
 router.put(
   "/:userId/:listId/edit",
+  authMiddle.isLoggedIn,
   authMiddle.isCurUserContentOwner,
   async (req, res) => {
     console.log("post attempted");
@@ -98,6 +99,7 @@ router.put(
 //edit page for a list item
 router.get(
   "/:userId/:listId/edit",
+  authMiddle.isLoggedIn,
   authMiddle.isCurUserContentOwner,
   async (req, res) => {
     let { contentOwner, listObj, userLists } = await getListDetailsFromServices(

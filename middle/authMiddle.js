@@ -9,7 +9,7 @@ middlewareObj.isCurUserContentOwner = (req, res, next) => {
   console.log("for ", req.params.userId);
   if (req.isAuthenticated()) {
     if (req.user._id.equals(req.params.userId)) {
-      console.log("onwer confirmed");
+      console.log("owner confirmed");
       next();
     } else {
       req.flash("error", "you need to be logged in as the owner to go there");
