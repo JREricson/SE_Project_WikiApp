@@ -35,12 +35,6 @@ router.get("/:userId/:listId", async (req, res) => {
       mapScript,
     });
   }
-
-  //console.log("content owner -->" + contentOwner);
-  //NeedListItems
-  //redirect if no user or list
-
-  //will later need user that is logged in
 });
 
 router.put(
@@ -48,12 +42,18 @@ router.put(
   // authMiddle.isCurUserContentOwner,
   async (req, res) => {
     console.log("post attempted");
-    let { newListItemsChecked, listNames, wikiUrls, listTitle } = req.body;
+    let {
+      deleteListItemsChecked,
+      newListItemsChecked,
+      listNames,
+      wikiUrls,
+      listTitle,
+    } = req.body;
     console.log("n: ", newListItemsChecked);
     console.log("l: ", listNames);
     console.log("u: ", wikiUrls);
     console.log("t: ", listTitle);
-
+    console.log("d: ", deleteListItemsChecked);
     let errors = [];
     let textJson, GPSJson;
     console.log("type is", typeof newListItemsChecked);
@@ -75,6 +75,13 @@ router.put(
 
     //update title if needed
     await updateTitle(req, listTitle);
+
+    //removing items
+
+    if (typeof deleteListItemsChecked === "string") {
+      deleteListItemsChecked = [deleteListItemsChecked];
+    }
+    await deleteItemsFromList(deleteListItemsChecked, req.params.listId);
 
     console.log("errs " + JSON.stringify(errors));
     if (errors.length > 0) {
@@ -107,6 +114,39 @@ router.get(
         GPSList,
       });
     }
+  }
+);
+router.get("/new", async (req, res) => {
+  res.render(`pages/newListPage`);
+});
+
+//creating new List
+router.post(
+  "/new",
+  // authMiddle.isCurUserContentOwner,
+  async (req, res) => {
+    console.log("in post req for new list");
+
+    //get values from req
+    let { listName } = req.body;
+
+    //create new list
+    let newList = new List({
+      lst_name: listName,
+    });
+    await newList.save();
+    console.log(newList._id);
+
+    let newListId = newList._id;
+
+    //update user
+    let contentOwner = req.user;
+    console.log(contentOwner);
+    contentOwner.usr_listIds.push(newListId);
+    contentOwner.save();
+
+    //redirect to new list
+    res.redirect(`/${contentOwner._id}/${newListId}/edit`);
   }
 );
 
@@ -219,35 +259,46 @@ async function getListDetailsFromServices(req) {
         console.log(wikiPath);
 
         /////image service below-- bring to func:
-        let imgServiceRes = await fetch(
-          `https://wiki-image-scraper.herokuapp.com/api/images/?title=${wikiPath}&ct=main`
-        );
-
-        let imgJson = await imgServiceRes.json();
-
-        if (imgJson["images"]) {
-          imgUrlList[ndx] = imgJson["images"];
-          console.log("added to the list", imgUrlList);
-          console.log(
-            "the url for the img is \n===========================================================================================================================",
-            imgJson["images"]
+        try {
+          let imgServiceRes = await fetch(
+            `https://wiki-image-scraper.herokuapp.com/api/images/?title=${wikiPath}&ct=main`
           );
+
+          let imgJson = await imgServiceRes.json();
+
+          if (imgJson["images"]) {
+            imgUrlList[ndx] = imgJson["images"];
+            console.log("added to the list", imgUrlList);
+            console.log(
+              "the url for the img is \n===========================================================================================================================",
+              imgJson["images"]
+            );
+          }
+        } catch {
+          //TODO handle this
         }
         /////image service above-- bring to func:
         //text service --  Intro
-        let textJson = await getTextJsonFromService(wikiPath);
+        try {
+          let textJson = await getTextJsonFromService(wikiPath);
 
-        if (textJson["Intro"]) {
-          // console.log(JSON.stringify(textJson.Intro));
-          textList[ndx] = JSON.stringify(textJson.Intro);
+          if (textJson["Intro"]) {
+            // console.log(JSON.stringify(textJson.Intro));
+            textList[ndx] = JSON.stringify(textJson.Intro);
+          }
+        } catch {
+          //TODO handle this
         }
+        try {
+          //text service -- GPS
+          let GPSJson = await getGPSJson(wikiPath);
 
-        //text service -- GPS
-        let GPSJson = await getGPSJson(wikiPath);
-
-        if (GPSJson) {
-          //console.log(JSON.stringify(GPSJson));
-          GPSList[ndx] = JSON.stringify(GPSJson);
+          if (GPSJson) {
+            //console.log(JSON.stringify(GPSJson));
+            GPSList[ndx] = JSON.stringify(GPSJson);
+          }
+        } catch {
+          //TODO handle this
         }
       })
     ).then(async () => {
@@ -324,3 +375,23 @@ async function getTextJsonFromService(wikiPath) {
   let textJson = await textServiceRes.json();
   return textJson;
 }
+const deleteItemsFromList = async (items, listId) => {
+  try {
+    List.updateOne(
+      { _id: listId },
+      {
+        $pull: {
+          lst_items: { itm_Name: { $in: items } },
+        },
+      },
+      { multi: true },
+      (err) => {
+        if (err) {
+          console.log(err);
+        }
+      }
+    );
+  } catch {
+    console.log("err removing items");
+  }
+};

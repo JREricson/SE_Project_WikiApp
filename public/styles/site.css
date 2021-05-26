@@ -17,12 +17,13 @@
   /* set height to 70 of screen size */
 }
 
-ItemList {
+.item-list {
   /* max-height: 70px;
   margin-bottom: 10px; */
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
   width: auto;
+  height: 500px;
 
   /* set to 70% os screen size */
 }

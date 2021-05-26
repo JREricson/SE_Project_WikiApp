@@ -69,7 +69,7 @@
     <div class="col-6 col-md-4">
        
 <% if (listObj.lst_items) {%>
-    <ul class="list-group ItemL">
+    <ul class="list-group item-list">
     <% listObj.lst_items.forEach((item, ndx)=>{ %>
         <li class="list-group-item"><%= item.itm_Name%><a href="#item-info-modal" data-toggle="modal"><button  data-index=<%=ndx%> type="button" class="btn btn-primary btn-sm viewInfoBtn " data-toggle="modal" data-target="#myModal"   onClick="open_modal(<%= ndx %>)" >view</button></a></li>
    
@@ -85,7 +85,7 @@
   </div>
 
 
-  <div id=test-div></div>
+
 
 
       <div id="item-info-modal" class="modal fade "> 
@@ -117,12 +117,23 @@
 
 
 <div>
-    <h2>Current Items</h2>
+    <h2>check items below to delete from List</h2>
     <% if (listObj.lst_items) {%>
         <ul class="list-group curListItems">
         <% listObj.lst_items.forEach((item, ndx)=>{ %>
-            <li class="list-group-item"><%= item.itm_Name%></li>
+          
+           
        
+            <li>
+                <div class="">
+                   
+
+                      <span  id=""><input type="checkBox" value="<%= item.itm_Name %>"id="deleteCheckBox<%= ndx%>" class="form-check-input  me-1 list-checkbox " name="deleteListItemsChecked">    <%= item.itm_Name%></span>
+               
+             
+                  </div>
+                </li>
+
     
             <%  }) %>
     
@@ -132,7 +143,7 @@
         <%- include('../components/editMessages') %>
 
     <!-- list of new items to be added -->
-    <h1>Add new Items to list by filling in feilds and checking box. Hit submit when done</h1>
+    <h1>Add new Items to list by filling in fields and checking box. Click on the Update List button to submit</h1>
         <ul class="list-group newListItems">
             <% for( newNdx=0; newNdx<20; newNdx++){ %>
                 <li>
