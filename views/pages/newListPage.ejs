@@ -8,6 +8,24 @@
   <button type="submit">Create new list</button>
 
 </form>
+<div class="dropdown show">
+  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="userListMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    User's Lists
+  </a>
 
+  <div class="dropdown-menu" aria-labelledby="userListMenu">
+     
+      <% if (userLists && userLists.length>0){%>
+
+         <% userLists.forEach(list => { %>
+
+         
+          <a class="dropdown-item" href= "<%=`../lists/${authUser._id}/${Object.values(list)}`%>">   <%=Object.keys(list) %></a>
+         <% } )%>
+
+      <%}%>
+
+  </div>
+</div>
 
  <%- include("../components/footer") %>

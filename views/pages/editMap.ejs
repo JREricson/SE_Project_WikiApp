@@ -2,7 +2,7 @@
 <%- include("../components/header") %>
 
 
-<!-- style shhet for leaflet map -->
+<!-- style sheet for leaflet map -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="crossorigin=""/>
 
 <!-- script for leaflet map -->
@@ -30,13 +30,12 @@
 
            <% userLists.forEach(list => { %>
 
-            <%=`./${Object.values(list)}/edit`%>
-            <a class="dropdown-item" href=>   <%=Object.keys(list) %></a>
+           
+            <a class="dropdown-item" href= "<%=`../${Object.values(list)}/edit`%>">   <%=Object.keys(list) %></a>
            <% } )%>
   
         <%}%>
 
-   
     </div>
   </div>
 

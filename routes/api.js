@@ -59,10 +59,8 @@ router.get("/picture", async (req, res) => {
       res.send(getImageErrors);
     } else {
       console.log(typeof imageBuffer);
-      let {
-        transformedImage,
-        processedImageErrors,
-      } = await makeTransformedImage(query, res, imageBuffer);
+      let { transformedImage, processedImageErrors } =
+        await makeTransformedImage(query, res, imageBuffer);
 
       if (Object.keys(processedImageErrors).length > 0) {
         res.send(processedImageErrors);
@@ -137,7 +135,7 @@ const makeTransformedImage = async (query, res, imageBuffer) => {
 
   if (query.ht) {
     let ht = parseInt(query.ht);
-    //would wan to fir to regex to check ranges, but implemented now as is beyond school project needs
+    //would want to fit to regex to check ranges, but implemented now as is beyond school project needs
 
     if (!ht) {
       processedImageErrors[

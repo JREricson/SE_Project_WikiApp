@@ -75,6 +75,7 @@ app.use(methodOverride("_method"));
 app.use(passport.initialize());
 app.use(passport.session());
 
+//these are gobal res variables
 app.use((req, res, next) => {
   //flash
   res.locals.success_msg = req.flash("successMsg");

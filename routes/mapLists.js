@@ -19,11 +19,10 @@ router.get("/:userId/:listId", async (req, res) => {
     req
   );
 
-  //TODO -- fix this ugly line
+  //TODO -- fix this ugly line!!!!
   if (typeof contentOwner != "object" || typeof listObj != "object") {
     res.status(404).render("pages/404");
   } else {
-    // console.log("--liat -- \n" + listObj, contentOwner);
     console.log("rendering page");
     res.render("pages/viewMap", {
       contentOwner,
@@ -39,7 +38,7 @@ router.get("/:userId/:listId", async (req, res) => {
 
 router.put(
   "/:userId/:listId/edit",
-  // authMiddle.isCurUserContentOwner,
+  authMiddle.isCurUserContentOwner,
   async (req, res) => {
     console.log("post attempted");
     let {
@@ -49,6 +48,7 @@ router.put(
       wikiUrls,
       listTitle,
     } = req.body;
+    //some debug messages that will be removed in short order
     console.log("n: ", newListItemsChecked);
     console.log("l: ", listNames);
     console.log("u: ", wikiUrls);
@@ -57,6 +57,8 @@ router.put(
     let errors = [];
     let textJson, GPSJson;
     console.log("type is", typeof newListItemsChecked);
+    //reassignment to array because, because checkBox item
+    //is coerced to an string if singular or an array if not
     if (typeof newListItemsChecked === "string") {
       newListItemsChecked = [newListItemsChecked];
     }
@@ -77,13 +79,15 @@ router.put(
     await updateTitle(req, listTitle);
 
     //removing items
-
+    //reassignment to array because, because checkBox item is coerced to an
+    // string if singular or an array if not
     if (typeof deleteListItemsChecked === "string") {
       deleteListItemsChecked = [deleteListItemsChecked];
     }
     await deleteItemsFromList(deleteListItemsChecked, req.params.listId);
 
     console.log("errs " + JSON.stringify(errors));
+
     if (errors.length > 0) {
       req.flash("errorList", errors);
     }
@@ -91,9 +95,10 @@ router.put(
   }
 );
 
+//edit page for a list item
 router.get(
   "/:userId/:listId/edit",
-  // authMiddle.isCurUserContentOwner,
+  authMiddle.isCurUserContentOwner,
   async (req, res) => {
     let { contentOwner, listObj, userLists } = await getListDetailsFromServices(
       req
@@ -103,7 +108,6 @@ router.get(
     if (typeof contentOwner != "object" || typeof listObj != "object") {
       res.status(404).render("pages/404");
     } else {
-      // console.log("--liat -- \n" + listObj, contentOwner);
       console.log("rendering page");
       res.render("pages/editMap", {
         contentOwner,
@@ -116,41 +120,52 @@ router.get(
     }
   }
 );
+//route for new list item
 router.get("/new", async (req, res) => {
-  res.render(`pages/newListPage`);
+  let userLists = await dbMethods.findNamesOfUserLists(req.user.usr_listIds);
+  let authUser = req.user;
+  res.render(`pages/newListPage`, { authUser, userLists });
 });
 
-//creating new List
-router.post(
-  "/new",
-  // authMiddle.isCurUserContentOwner,
-  async (req, res) => {
-    console.log("in post req for new list");
+//handling new List item
+router.post("/new", async (req, res) => {
+  console.log("in post req for new list");
 
-    //get values from req
-    let { listName } = req.body;
+  //get values from req
+  let { listName } = req.body;
 
-    //create new list
-    let newList = new List({
-      lst_name: listName,
-    });
-    await newList.save();
-    console.log(newList._id);
+  //create new list
+  let newList = new List({
+    lst_name: listName,
+  });
+  await newList.save();
+  console.log(newList._id);
 
-    let newListId = newList._id;
+  let newListId = newList._id;
 
-    //update user
-    let contentOwner = req.user;
-    console.log(contentOwner);
-    contentOwner.usr_listIds.push(newListId);
-    contentOwner.save();
+  //update user
+  let contentOwner = req.user;
+  console.log(contentOwner);
+  contentOwner.usr_listIds.push(newListId);
+  contentOwner.save();
 
-    //redirect to new list
-    res.redirect(`${contentOwner._id}/${newListId}/edit`);
-  }
-);
+  //redirect to new list
+  res.redirect(`${contentOwner._id}/${newListId}/edit`);
+});
 
 module.exports = router;
+
+/**
+ * Yikes! that is an ugly long function!!
+ * @param {*} newListItemsChecked
+ * @param {*} listNames
+ * @param {*} wikiUrls
+ * @param {*} textJson
+ * @param {*} errors
+ * @param {*} GPSJson
+ * @param {*} req
+ * @returns
+ */
 async function generateErrorsAndAddNewListItems(
   newListItemsChecked,
   listNames,
@@ -212,12 +227,17 @@ async function generateErrorsAndAddNewListItems(
   );
   return { textJson, GPSJson };
 }
-
+/**
+ * The the List in the in the database by the req object, then updates the value of
+ * the list's title
+ * @param {*} req
+ * @param {string} listTitle
+ */
 async function updateTitle(req, listTitle) {
-  let theList = await List.findById(req.params.listId);
+  let list = await List.findById(req.params.listId);
 
-  if (theList && theList.lst_name) {
-    if (theList.lst_name !== listTitle) {
+  if (list && list.lst_name) {
+    if (list.lst_name !== listTitle) {
       console.log("changing title");
       await List.findByIdAndUpdate(
         req.params.listId,
@@ -230,7 +250,12 @@ async function updateTitle(req, listTitle) {
   }
 }
 
-async function getListDetailsFromServices(req) {
+/**
+ * Fret Not fellow compatriots! This will be broken down to look all purdy purdy
+ * @param {*} req
+ * @returns
+ */
+const getListDetailsFromServices = async (req) => {
   let contentOwner = await dbMethods.findUserbyId(req.params.userId);
 
   let listObj;
@@ -359,7 +384,14 @@ async function getListDetailsFromServices(req) {
     });
   }
   return { contentOwner, listObj, userLists };
-}
+};
+
+/**
+ * gets GPS containing JSON from service at
+ * https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}/coords
+ * @param {string} wikiPath
+ * @returns {JSON} response from service
+ */
 async function getGPSJson(wikiPath) {
   let textGPSServiceRes = await fetch(
     `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}/coords`
@@ -369,6 +401,11 @@ async function getGPSJson(wikiPath) {
   return GPSJson;
 }
 
+/**
+ * gets JSON from service at https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}
+ * @param {string} wikiPath
+ * @returns {JSON} response from service
+ */
 async function getTextJsonFromService(wikiPath) {
   let textServiceRes = await fetch(
     `https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}`
@@ -377,6 +414,12 @@ async function getTextJsonFromService(wikiPath) {
   let textJson = await textServiceRes.json();
   return textJson;
 }
+
+/**
+ *
+ * @param {[string]}  items - names of items to delete
+ * @param {String} listId - Id of the List
+ */
 const deleteItemsFromList = async (items, listId) => {
   try {
     List.updateOne(

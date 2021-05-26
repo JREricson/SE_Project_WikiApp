@@ -1,7 +1,6 @@
 //imported modules
 const express = require("express"),
   router = express.Router(),
-  bcrypt = require("bcryptjs"),
   passport = require("passport");
 
 //app modules
@@ -70,46 +69,10 @@ router.post("/register", (req, res) => {
         DBmethods.createUser(userName, password).then((user) => {
           req.flash("successMsg", "You are now registered. Please sign in");
           res.redirect("/login");
-          console.log("enc user is ", user);
         });
       }
     });
-    //res.send("yay");
   }
-
-  // if (errors.length > 0) {
-  //   //rendering page with user info to put in fields and errors for flash images
-
-  //   userMidware.renderPageWithUser(req, res, "auth/register", {
-  //     errors,
-  //     name,
-  //     email,
-  //     password,
-  //     password2,
-  //     authKey,
-  //   });
-  // } else {
-  //   User.findOne({ email: email }).then((user) => {
-  //     if (user) {
-  //       errors.push({ err: "User name is already taken" });
-  //       //rerendering page with saved values
-  //       userMidware.renderPageWithUser(req, res, "auth/register", {
-  //         errors,
-  //         name,
-  //         email,
-  //         password,
-  //         password2,
-  //       });
-  //     } else {
-  //       //passed validation
-  //       //creating new user
-  //       userMethods.createUser(name, password, email).then((user) => {
-  //         req.flash("successReg", "You are now registered. Please sign in");
-  //         res.redirect("/login");
-  //       });
-  //     }
-  //   });
-  // }
 });
 
 /////////////////
@@ -120,9 +83,7 @@ const getValidationErrors = (userName, password, password2, authKey) => {
 
   //check required fields
   if (!userName || !password || !password2 || !authKey) {
-    errors.push({
-      err: "all fields are required",
-    });
+    errors.push({ err: "all fields are required" });
   }
 
   //check pw match
@@ -134,23 +95,18 @@ const getValidationErrors = (userName, password, password2, authKey) => {
 
   //check contains num
 
-  //chack pw length
+  //check pw length
   if (password.length <= 9) {
-    errors.push({
-      err: "password must be at least 9 characters",
-    });
+    errors.push({ err: "password must be at least 9 characters" });
   }
 
-  // if (!authKey) {
-  //   errors.push({
-  //     err: "authorization key is needed",
-  //   });
-  // }
-  //  else if (authKey !== process.env.AUTH_KEY) {
-  //   errors.push({
-  //     err: "authorization key is not valid",
-  //   });
-  // }
+  if (!authKey) {
+    errors.push({
+      err: "authorization key is needed",
+    });
+  } else if (authKey !== process.env.AUTH_KEY) {
+    errors.push({ err: "authorization key is not valid" });
+  }
   return errors;
 };
 
