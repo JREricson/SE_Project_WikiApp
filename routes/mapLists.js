@@ -1,7 +1,7 @@
-fetch = require("node-fetch");
-
-const express = require("express");
-const router = express.Router();
+//dependency modules
+const fetch = require("node-fetch"),
+  express = require("express"),
+  router = express.Router();
 
 //local modules
 const dbMethods = require("../helpers/databaseMethods"),
@@ -55,6 +55,7 @@ router.put(
     console.log("u: ", wikiUrls);
     console.log("t: ", listTitle);
     console.log("d: ", deleteListItemsChecked);
+    q;
     let errors = [];
     let textJson, GPSJson;
     console.log("type is", typeof newListItemsChecked);
@@ -230,7 +231,7 @@ async function generateErrorsAndAddNewListItems(
   return { textJson, GPSJson };
 }
 /**
- * The the List in the in the database by the req object, then updates the value of
+ * The List in the database by the req object, then updates the value of
  * the list's title
  * @param {*} req
  * @param {string} listTitle
@@ -310,7 +311,6 @@ const getListDetailsFromServices = async (req) => {
           let textJson = await getTextJsonFromService(wikiPath);
 
           if (textJson["Intro"]) {
-            // console.log(JSON.stringify(textJson.Intro));
             textList[ndx] = JSON.stringify(textJson.Intro);
           }
         } catch {
@@ -406,7 +406,7 @@ async function getGPSJson(wikiPath) {
 /**
  * gets JSON from service at https://wiki-text-scraper.herokuapp.com/wiki/${wikiPath}
  * @param {string} wikiPath
- * @returns {JSON} response from service
+ * @returns {JSON} from service response
  */
 async function getTextJsonFromService(wikiPath) {
   let textServiceRes = await fetch(

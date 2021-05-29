@@ -25,7 +25,7 @@ middlewareObj.isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   } else {
-    req.flash("error", "please login first"); //TODO -- get flash to work
+    req.flash("error", "Cannot access without being logged in"); //TODO -- get flash to work
     res.redirect("/login");
   }
 };

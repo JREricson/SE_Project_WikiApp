@@ -28,26 +28,28 @@ router.get("/", (req, res) => {
   res.send("test");
 });
 
+//show about page
 router.get("/about", (req, res) => {
   res.render("pages/about");
 });
 
+//show logout page
 router.get("/logout", (req, res) => {
   req.logout();
   req.flash("successMsg", "You are now logged out");
   res.redirect("/login");
 });
 
+//show registration page
 router.get("/register", (req, res) => {
   res.render("pages/register");
 });
+
+//handling registration request
 router.post("/register", (req, res) => {
   const { userName, password, password2, authKey } = req.body;
 
-  //errors -- will hold a list of all caught errors in registration precess
-  let errors = [];
-
-  errors = getValidationErrors(userName, password, password2, authKey);
+  let errors = getValidationErrors(userName, password, password2, authKey);
 
   let renderObj = { userName, password, password2, authKey };
   if (errors.length > 0) {
@@ -74,6 +76,17 @@ router.post("/register", (req, res) => {
     });
   }
 });
+
+//Handle delete user request
+router.delete(
+  "/:userId",
+  authMidware.isCurUserContentOwner,
+  async (req, res) => {
+    await DBmethods.deleteUser(req.user._id);
+
+    res.redirect("/login");
+  }
+);
 
 /////////////////
 //helper functions

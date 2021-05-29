@@ -64,8 +64,8 @@ moduleObj.findListbyId = async (listId) => {
 
 moduleObj.findNamesOfUserLists = async (listOfListIds) => {
   console.log("in find names of user lists");
-  let listOfNameObjs = []; // name: Id pair objs
-  // let user = await User.findById(userId);
+  let listOfNameObjs = [];
+
   try {
     if (listOfListIds.length > 0) {
       console.log(listOfListIds);
@@ -95,6 +95,22 @@ moduleObj.findNamesOfUserLists = async (listOfListIds) => {
 };
 
 /////////////////
+//Delete methods
+/////////////////
+
+/**
+ * Deletes user with userID from database
+ * @param {string} userID
+ */
+moduleObj.deleteUser = (userID) => {
+  User.findByIdAndRemove(userID, function (err) {
+    if (err) {
+      console.log("error removing user \n" + err);
+    }
+  });
+};
+
+/////////////////
 //helper functions
 /////////////////
 
@@ -106,10 +122,9 @@ const encryptPasswordAndSaveUser = (newUser) => {
   console.log("new user is: ", newUser);
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(newUser.usr_password, salt, (err, hash) => {
-      console.log("pw before ", newUser.usr_password);
       ///   if (err) throw err;
       newUser.usr_password = hash;
-      console.log("pw aFTER ", newUser.usr_password);
+
       newUser.save().catch((err) => console.log(err));
     });
   });
