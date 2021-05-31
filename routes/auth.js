@@ -4,7 +4,8 @@ const express = require("express"),
   passport = require("passport");
 
 //app modules
-const DBmethods = require("../helpers/databaseMethods");
+const DbMethods = require("../helpers/databaseMethods"),
+  authMiddle = require("../middle/authMiddle");
 
 // Passport Config
 require("../config/passport")(passport);
@@ -68,7 +69,7 @@ router.post("/register", (req, res) => {
       } else {
         //passed validation
         //creating new user
-        DBmethods.createUser(userName, password).then((user) => {
+        DbMethods.createUser(userName, password).then((user) => {
           req.flash("successMsg", "You are now registered. Please sign in");
           res.redirect("/login");
         });
@@ -78,15 +79,15 @@ router.post("/register", (req, res) => {
 });
 
 //Handle delete user request
-router.delete(
-  "/:userId",
-  authMidware.isCurUserContentOwner,
-  async (req, res) => {
-    await DBmethods.deleteUser(req.user._id);
+router.get("/deleteuser", authMiddle.isLoggedIn, async (req, res) => {
+  let listOfUserIds = req.user.usr_listIds;
 
-    res.redirect("/login");
-  }
-);
+  await DbMethods.deleteAllListInArray(listOfUserIds);
+  await DbMethods.deleteUser(req.user._id);
+  req.flash("successMsg", "You're account has been deleted");
+
+  res.redirect("/login");
+});
 
 /////////////////
 //helper functions

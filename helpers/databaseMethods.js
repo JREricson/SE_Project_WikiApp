@@ -30,7 +30,7 @@ moduleObj.createUser = async (userName, password) => {
 //////////////
 
 /**
- * tries to find a user in the database, ruturns null if none found
+ * tries to find a user in the database, returns null if none found
  * @param {*} userId
  */
 moduleObj.findUserbyId = async (userId) => {
@@ -110,6 +110,26 @@ moduleObj.deleteUser = (userID) => {
   });
 };
 
+moduleObj.deleteList = async (listId) => {
+  await List.findByIdAndRemove(listId, function (err) {
+    if (err) {
+      console.log("error removing list \n" + err);
+    }
+  });
+};
+
+moduleObj.deleteListWithReferences = async (listId, userId) => {
+  await User.findByIdAndUpdate(userId, {
+    $pull: { usr_listIds: listId },
+  });
+
+  await moduleObj.deleteList(listId);
+};
+
+moduleObj.deleteAllListInArray = async (arrayOfListIds) => {
+  await List.deleteMany({ _id: arrayOfListIds });
+};
+
 /////////////////
 //helper functions
 /////////////////
@@ -124,7 +144,6 @@ const encryptPasswordAndSaveUser = (newUser) => {
     bcrypt.hash(newUser.usr_password, salt, (err, hash) => {
       ///   if (err) throw err;
       newUser.usr_password = hash;
-
       newUser.save().catch((err) => console.log(err));
     });
   });

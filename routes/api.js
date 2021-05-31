@@ -20,7 +20,7 @@ router.get("/picture", async (req, res) => {
     wid: 1,
     fit: 1,
   };
-  let rejectedqueries = [];
+  let rejectedQueries = [];
   //errors=[]
 
   let query = req.query;
@@ -29,7 +29,7 @@ router.get("/picture", async (req, res) => {
   //checking for errors in query
   for (const [key] of Object.entries(query)) {
     if (!acceptedQueries[key]) {
-      rejectedqueries.push(key);
+      rejectedQueries.push(key);
     }
     console.log(key);
   }
@@ -37,10 +37,10 @@ router.get("/picture", async (req, res) => {
     res.send({
       noQueryError: "no query was entered",
     });
-  } else if (rejectedqueries.length > 0) {
+  } else if (rejectedQueries.length > 0) {
     res.send({
       RejectedQueryError: {
-        rejected: rejectedqueries,
+        rejected: rejectedQueries,
       },
     });
   } else if (!query["url"]) {

@@ -55,7 +55,7 @@ router.put(
     console.log("u: ", wikiUrls);
     console.log("t: ", listTitle);
     console.log("d: ", deleteListItemsChecked);
-    q;
+
     let errors = [];
     let textJson, GPSJson;
     console.log("type is", typeof newListItemsChecked);
@@ -123,6 +123,23 @@ router.get(
     }
   }
 );
+
+//handle delete request of item
+router.get(
+  "/:userId/:listId/delete",
+  // authMiddle.isLoggedIn,
+  // authMiddle.isCurUserContentOwner,
+  async (req, res) => {
+    //delete list
+    await dbMethods.deleteListWithReferences(
+      req.params.listId,
+      req.params.userId
+    );
+
+    res.redirect("/lists/new");
+  }
+);
+
 //route for new list item
 router.get("/new", authMiddle.isLoggedIn, async (req, res) => {
   let userLists = await dbMethods.findNamesOfUserLists(req.user.usr_listIds);

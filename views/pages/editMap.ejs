@@ -14,6 +14,17 @@
 
 <%- include("../components/navbar") %>
 <a href="." class="btn btn-primary">Done Editing</a>
+<button id="show-delete-opt" class="btn btn-danger">Delete List</button>
+<div hidden ="true" id="delete-list-options" >
+  <form action="delete?_method=DELETE">
+    <h2>Click confirm delete button to delete list</h2>
+
+    <button class ="btn btn-danger" type="submit">Confirm delete</button>
+    <a id="cancel-delete-btn" class="btn btn-primary">Cancel delete</a>
+
+  </form>
+
+</div>
 
 
 
@@ -198,9 +209,8 @@
 
 
 <script src="../../../scripts/viewMapSetup.js"></script>
-<!-- <script src="../../scripts/fakeImageService.js"></script> -->
-<script src="../../../scripts/fakeMapService.js"></script>
-<!-- <script src="../../scripts/fakeWikiScraper.js"></script> -->
+<script src="../../../scripts/deleteList.js"></script>
+
 <script src="../../../scripts/resetModalData.js"></script>
 
 

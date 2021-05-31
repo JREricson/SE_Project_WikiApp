@@ -35,7 +35,7 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
      
-            <a class="dropdown-item" href="#">Delete User</a>
+            <span id="delete-user-btn" class="dropdown-item" href="#">Delete User</span>
     
 
           
@@ -46,3 +46,20 @@
 
     </div>
   </nav>
+
+  <div hidden id="delete-user-options" >
+    <form id="delete-user-form" action="/deleteuser?_method=DELETE">
+      <p hidden id="enter-delete-warning">Please Enter the word delete to confirm</p>
+
+
+
+      <label for="confirm-delete-text">Enter delete in box below to confirm delete</label>
+      <input id="confirm-delete-text" type="text">
+
+    </form>
+    <button id="confirm-del-user-btn"class ="btn btn-danger" >Confirm delete</button>
+    <button id="cancel-del-user-btn" class="btn btn-primary">Cancel delete</button>
+
+  </div>
+
+  <script src="../../../scripts/deleteUser.js"></script>
