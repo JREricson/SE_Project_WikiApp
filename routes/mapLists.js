@@ -64,12 +64,9 @@ router.put(
     if (typeof newListItemsChecked === "string") {
       newListItemsChecked = [newListItemsChecked];
     }
-    //get errors or update
+
     try {
       ({ textJson, GPSJson } = await generateErrorsAndAddNewListItems(
-        newListItemsChecked,
-        listNames,
-        wikiUrls,
         textJson,
         errors,
         GPSJson,
@@ -142,7 +139,9 @@ router.get(
 
 //route for new list item
 router.get("/new", authMiddle.isLoggedIn, async (req, res) => {
-  let userLists = await dbMethods.findNamesOfUserLists(req.user.usr_listIds);
+  let userLists = await dbMethods.attemptFindNamesOfUserListItems(
+    req.user.usr_listIds
+  );
   let authUser = req.user;
   res.render(`pages/newListPage`, { authUser, userLists });
 });
@@ -177,24 +176,21 @@ module.exports = router;
 
 /**
  * Yikes! that is an ugly long function!!
- * @param {*} newListItemsChecked
- * @param {*} listNames
- * @param {*} wikiUrls
+
  * @param {*} textJson
  * @param {*} errors
  * @param {*} GPSJson
  * @param {*} req
  * @returns
  */
-async function generateErrorsAndAddNewListItems(
-  newListItemsChecked,
-  listNames,
-  wikiUrls,
+const generateErrorsAndAddNewListItems = async (
   textJson,
   errors,
   GPSJson,
   req
-) {
+) => {
+  let { newListItemsChecked, listNames, wikiUrls } = req.body;
+
   await Promise.all(
     newListItemsChecked.map(async (item) => {
       console.log("n: ", newListItemsChecked);
@@ -246,7 +242,7 @@ async function generateErrorsAndAddNewListItems(
     })
   );
   return { textJson, GPSJson };
-}
+};
 /**
  * The List in the database by the req object, then updates the value of
  * the list's title
@@ -258,7 +254,6 @@ async function updateTitle(req, listTitle) {
 
   if (list && list.lst_name) {
     if (list.lst_name !== listTitle) {
-      console.log("changing title");
       await List.findByIdAndUpdate(
         req.params.listId,
         { lst_name: listTitle },
@@ -284,7 +279,9 @@ const getListDetailsFromServices = async (req) => {
   }
   let userLists;
   if (contentOwner) {
-    userLists = await dbMethods.findNamesOfUserLists(contentOwner.usr_listIds);
+    userLists = await dbMethods.attemptFindNamesOfUserListItems(
+      contentOwner.usr_listIds
+    );
     console.log("user lists are", userLists);
   }
   // make sure will not crash if no url

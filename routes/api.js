@@ -118,7 +118,7 @@ const makeTransformedImage = async (query, res, imageBuffer) => {
     if (!acceptedFitKeys[query.fit]) {
       processedImageErrors[
         "keyError"
-      ] = `keyError: fit cannnot have value of  \'${query.fit}\'`;
+      ] = `keyError: fit cannot have value of  \'${query.fit}\'`;
     }
   }
 

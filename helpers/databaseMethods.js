@@ -1,7 +1,7 @@
 const User = require("../models/user"),
   List = require("../models/list"),
   bcrypt = require("bcryptjs");
-moduleObj = {};
+let moduleObj = {};
 
 ///////////////
 //create methods
@@ -62,36 +62,16 @@ moduleObj.findListbyId = async (listId) => {
   return theList;
 };
 
-moduleObj.findNamesOfUserLists = async (listOfListIds) => {
-  console.log("in find names of user lists");
+moduleObj.attemptFindNamesOfUserListItems = async (listOfListIds) => {
   let listOfNameObjs = [];
-
   try {
     if (listOfListIds.length > 0) {
-      console.log(listOfListIds);
-      await Promise.all(
-        listOfListIds.map(async (listId) => {
-          console.log("printing lists");
-          let listObj = await List.findById(listId);
-          let listName = listObj.lst_name;
-          // console.log("list obj ", listObj);
-          console.log("list name ", listName);
-          let newObj = {};
-          newObj[listName] = listId;
-          console.log(JSON.stringify(newObj));
-
-          listOfNameObjs.push(newObj);
-        })
-      );
-      return listOfNameObjs;
-    } else {
-      console.log("no items in list");
-      return listOfNameObjs;
+      await findNamesOfUserListItems(listOfListIds, listOfNameObjs);
     }
   } catch {
     console.log("something went wrong");
-    return [];
   }
+  return listOfNameObjs;
 };
 
 /////////////////
@@ -152,3 +132,14 @@ const encryptPasswordAndSaveUser = (newUser) => {
 ///////////////////////////
 
 module.exports = moduleObj;
+const findNamesOfUserListItems = async (listOfListIds, listOfNameObjs) => {
+  await Promise.all(
+    listOfListIds.map(async (listId) => {
+      let listObj = await List.findById(listId);
+      let listName = listObj.lst_name;
+      let newObj = {};
+      newObj[listName] = listId;
+      listOfNameObjs.push(newObj);
+    })
+  );
+};

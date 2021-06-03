@@ -28,13 +28,11 @@
     <div class="dropdown-menu" aria-labelledby="userListMenu">
        
         <% if (userLists && userLists.length>0){%>
-
            <% userLists.forEach(list => { %>
-             
-
-        <a class="dropdown-item" href="<%=`${Object.values(list)}`%>">   <%=Object.keys(list) %></a>
+        <a class="dropdown-item" href="<%=`${Object.values(list)}`%>">
+            <%=Object.keys(list) %>
+        </a>
            <% } )%>
-  
         <%}%>
 
    
@@ -53,8 +51,6 @@
     <div class="col-12 col-md-8">
         <div id="mapid"></div>
 
-
-
     </div>
     <div class="col-6 col-md-4">
        
@@ -62,12 +58,8 @@
     <ul class="list-group item-list">
     <% listObj.lst_items.forEach((item, ndx)=>{ %>
         <li class="list-group-item"><%= item.itm_Name%><a href="#item-info-modal" data-toggle="modal"><button  data-index=<%=ndx%> type="button" class="btn btn-primary btn-sm viewInfoBtn " data-toggle="modal" data-target="#myModal"   onClick="open_modal(<%= ndx %>)" >view</button></a></li>
-   
-
         <%  }) %>
-
     </ul>
-
     <% }%>
 
 

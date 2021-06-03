@@ -25,6 +25,13 @@ const open_modal = (index) => {
     vw / 3
   }&fit=crop&url=${encodedUrl}`;
   modalName.innerHTML = theListData.lst_items[index].itm_Name;
-
-  modalDescription.innerHTML = allIntoText[index];
+  let origDescription = allIntoText[index];
+  let descriptionWithLineBreaks = origDescription
+    .replaceAll("\\n", "<br><br>")
+    .replaceAll('\\"', '"');
+  descriptionWithLineBreaks = descriptionWithLineBreaks.substring(
+    1,
+    descriptionWithLineBreaks.length - 1
+  );
+  modalDescription.innerHTML = descriptionWithLineBreaks;
 };

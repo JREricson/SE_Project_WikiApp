@@ -4,8 +4,7 @@ const express = require("express"),
   passport = require("passport");
 
 //app modules
-const DbMethods = require("../helpers/databaseMethods"),
-  authMiddle = require("../middle/authMiddle");
+const DBmethods = require("../helpers/databaseMethods");
 
 // Passport Config
 require("../config/passport")(passport);
@@ -29,24 +28,19 @@ router.get("/", (req, res) => {
   res.send("test");
 });
 
-//show about page
 router.get("/about", (req, res) => {
   res.render("pages/about");
 });
 
-//show logout page
 router.get("/logout", (req, res) => {
   req.logout();
   req.flash("successMsg", "You are now logged out");
   res.redirect("/login");
 });
 
-//show registration page
 router.get("/register", (req, res) => {
   res.render("pages/register");
 });
-
-//handling registration request
 router.post("/register", (req, res) => {
   const { userName, password, password2, authKey } = req.body;
 
@@ -69,24 +63,13 @@ router.post("/register", (req, res) => {
       } else {
         //passed validation
         //creating new user
-        DbMethods.createUser(userName, password).then((user) => {
+        DBmethods.createUser(userName, password).then((user) => {
           req.flash("successMsg", "You are now registered. Please sign in");
           res.redirect("/login");
         });
       }
     });
   }
-});
-
-//Handle delete user request
-router.get("/deleteuser", authMiddle.isLoggedIn, async (req, res) => {
-  let listOfUserIds = req.user.usr_listIds;
-
-  await DbMethods.deleteAllListInArray(listOfUserIds);
-  await DbMethods.deleteUser(req.user._id);
-  req.flash("successMsg", "You're account has been deleted");
-
-  res.redirect("/login");
 });
 
 /////////////////

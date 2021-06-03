@@ -1,0 +1,18 @@
+<% if (listObj.lst_items) {%>
+    <ul class="list-group item-list">
+    <% listObj.lst_items.forEach((item, ndx)=>{ %>
+        <li class="list-group-item"><%= item.itm_Name%>
+          <a href="#item-info-modal" data-toggle="modal">
+            <button data-index="<%= ndx%>"
+                    type="button"
+                    class="btn btn-primary btn-sm viewInfoBtn"
+                    data-toggle="modal"
+                    data-target="#myModal"
+                    onClick="open_modal(<%= ndx %>)" >
+              view
+            </button>
+          </a>
+        </li>
+        <%  }) %>
+    </ul>
+    <% }%>
