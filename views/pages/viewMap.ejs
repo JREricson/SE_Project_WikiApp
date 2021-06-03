@@ -29,7 +29,7 @@
        
         <% if (userLists && userLists.length>0){%>
            <% userLists.forEach(list => { %>
-        <a class="dropdown-item" href="<%=`${Object.values(list)}`%>">
+        <a class="dropdown-item" href="<%=`/test${Object.values(list)}`%>">
             <%=Object.keys(list) %>
         </a>
            <% } )%>
