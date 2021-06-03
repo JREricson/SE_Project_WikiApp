@@ -25,7 +25,7 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.get("/", (req, res) => {
-  res.send("test");
+  res.render("pages/home");
 });
 
 router.get("/about", (req, res) => {

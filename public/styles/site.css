@@ -90,3 +90,8 @@
   position: relative;
   z-index: 1;
 }
+.landing-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
