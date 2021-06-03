@@ -36,10 +36,10 @@
     </a>
   
     <div class="dropdown-menu" aria-labelledby="userListMenu">
-       
+    
         <% if (userLists && userLists.length>0){%>
            <% userLists.forEach(list => { %>
-            <a class="dropdown-item" href= "<%=`../${Object.values(list)}/edit`%>">
+            <a class="dropdown-item" href= "<%=`/lists/${contentOwner._id}/${Object.values(list)}/edit`%>">
               <%=Object.keys(list) %>
             </a>
            <% } )%>
