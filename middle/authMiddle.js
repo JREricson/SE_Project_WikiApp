@@ -4,9 +4,6 @@
 var middlewareObj = {};
 
 middlewareObj.isCurUserContentOwner = (req, res, next) => {
-  console.log("access attempt");
-  console.log("by ", req.user._id);
-  console.log("for ", req.params.userId);
   if (req.isAuthenticated()) {
     if (req.user._id.equals(req.params.userId)) {
       console.log("owner confirmed");
