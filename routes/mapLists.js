@@ -64,15 +64,20 @@ router.put(
     if (typeof newListItemsChecked === "string") {
       newListItemsChecked = [newListItemsChecked];
     }
-
+    //get errors or update
     try {
       ({ textJson, GPSJson } = await generateErrorsAndAddNewListItems(
+        newListItemsChecked,
+        listNames,
+        wikiUrls,
         textJson,
         errors,
         GPSJson,
         req
       ));
-    } catch {}
+    } catch {
+      console.log("failed at getting items");
+    }
 
     //update title if needed
     await updateTitle(req, listTitle);
@@ -176,21 +181,21 @@ module.exports = router;
 
 /**
  * Yikes! that is an ugly long function!!
-
  * @param {*} textJson
  * @param {*} errors
  * @param {*} GPSJson
  * @param {*} req
  * @returns
  */
-const generateErrorsAndAddNewListItems = async (
+async function generateErrorsAndAddNewListItems(
+  newListItemsChecked,
+  listNames,
+  wikiUrls,
   textJson,
   errors,
   GPSJson,
   req
-) => {
-  let { newListItemsChecked, listNames, wikiUrls } = req.body;
-
+) {
   await Promise.all(
     newListItemsChecked.map(async (item) => {
       console.log("n: ", newListItemsChecked);
@@ -222,7 +227,6 @@ const generateErrorsAndAddNewListItems = async (
             `adding "${listNames[item]}" to db\n---------------------`
           );
           //TODO -- add verification of ownership
-
           await List.findByIdAndUpdate(req.params.listId, {
             $push: {
               lst_items: {
@@ -236,13 +240,12 @@ const generateErrorsAndAddNewListItems = async (
             "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
           );
         }
-
         console.log(JSON.stringify(GPSJson));
       }
     })
   );
   return { textJson, GPSJson };
-};
+}
 /**
  * The List in the database by the req object, then updates the value of
  * the list's title
